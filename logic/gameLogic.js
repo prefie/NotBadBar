@@ -60,11 +60,6 @@ class Order {
     start() {
         // TODO: начинаем выполнение заказа
         setTimeout(this.end, this.time, this);
-        this._timeout = setTimeout(function func(order) {
-            Order.tryPassOrder(order);
-            order._timeout = setTimeout(func, 300, order);
-        }, 300, this);
-        /*this._interval = setInterval(this.tryPassOrder, 300, this)*/
     }
 
     end(order) {
@@ -72,20 +67,24 @@ class Order {
         if (order.status !== "Completed")
             order.status = "Fail";
         clearTimeout(order._timeout);
-        /*clearInterval(order._interval);*/
     }
 
     chooseGlass(name) {
         this.glass = new Glass(name);
     }
 
-    static tryPassOrder(order) {
-        if (order.status === "Fail")
+    addIngredientInGlass(ingredient) {
+        this.glass.addIngredient(ingredient);
+        this.tryPassOrder()
+    }
+
+    tryPassOrder() {
+        if (this.status === "Fail")
             return false;
 
-        const result = order.patternGlass.equals(order.glass);
+        const result = this.patternGlass.equals(this.glass);
         if (result)
-            order.status = "Completed";
+            this.status = "Completed";
         return result;
     }
 }
@@ -110,7 +109,6 @@ class Bar {
             Bar.passOrder(bar);
             bar._timeout = setTimeout(func, 300, bar)
         }, 300, this)
-        /*this._interval = setInterval(this.passOrder, 300, this);*/
     }
 
     static passOrder(bar) {
@@ -121,20 +119,19 @@ class Bar {
         for (const order of bar.ordersInProgess) {
             if (order.status === "Completed") {
                 bar.money += order.price;
-            } else {
+            } else if (order.status === "Not completed") {
                 answer.push(order);
             }
         }
 
         bar.ordersInProgess = answer;
-        console.log(bar.ordersInProgess);
-        console.log(answer);
+        /*console.log(bar.ordersInProgess);
+        console.log(answer);*/
     }
 
     end(bar) {
         // TODO: уровень завершился, что делаем?
         clearTimeout(bar._timeout);
-        /*clearInterval(bar._interval);*/
     }
 
     tryGetNextOrder(order) {
@@ -183,14 +180,13 @@ bar.start();
 const order = bar.orders[0];
 bar.tryGetNextOrder(order);
 order.chooseGlass("1");
-order.glass.addIngredient(new Liquid("Vodka", 3, "white"));
-order.glass.addIngredient(new Topping("Cherry", 5));
+order.addIngredientInGlass(new Liquid("Vodka", 3, "white"));
+order.addIngredientInGlass(new Topping("Cherry", 5));
 
 const order1 = bar.orders[1]
 bar.tryGetNextOrder(order1);
 order1.chooseGlass("2");
-order1.glass.addIngredient(new Liquid("Vodka", 3, "white"));
-order1.glass.addIngredient(new Topping("Cherry", 5));
+order1.addIngredientInGlass(new Liquid("Vodka", 3, "white"));
 
 
 setTimeout(function func() {
@@ -198,12 +194,16 @@ setTimeout(function func() {
     let flag = bar.tryGetNextOrder(order2);
     if (flag) {
         order2.chooseGlass("3");
-        order2.glass.addIngredient(new Liquid("Vodka", 3, "white"));
-        order2.glass.addIngredient(new Topping("Cherry", 5));
+        order2.addIngredientInGlass(new Liquid("Vodka", 3, "white"));
+        order2.addIngredientInGlass(new Topping("Cherry", 5));
     }
     else {
         setTimeout(func, 200)
     }
-}, 200)
+}, 200);
+
+setTimeout(function () {
+    order1.addIngredientInGlass(new Topping("Cherry", 5));
+} , 1500);
 
 setTimeout(() => console.log(bar.money), 6000);*/
