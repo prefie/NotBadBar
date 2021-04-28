@@ -1,3 +1,5 @@
+
+
 class Glass {
     constructor(name, ingredients=[]) { // TODO: добавить ограничение на вместимость
         this.name = name;
@@ -36,20 +38,20 @@ class Ingredient {
     }
 }
 
-class Liquid extends Ingredient {
+ class Liquid extends Ingredient {
     constructor(name, price, color) {
         super(name, price);
         this.color = color;
     }
 }
 
-class Topping extends Ingredient {
+ class Topping extends Ingredient {
     constructor(name, price) {
         super(name, price);
     }
 }
 
-class Order {
+ class Order {
     constructor(pattern, time, price) {
         this.patternGlass = pattern;
         this.time = time;
@@ -89,7 +91,7 @@ class Order {
     }
 }
 
-class Bar {
+ class Bar {
     constructor(orders, glasses, liquids, toppings, time) {
         this.orders = orders;
         this.glasses = glasses;
@@ -144,6 +146,7 @@ class Bar {
         return false;
     }
 }
+module.exports = { Glass, Liquid, Order, Bar, Topping }
 
 // НИЖЕ НАШ ПЕРВЫЙ ТЕСТ ЛОГИКИ =)
 /*const bar = new Bar([
