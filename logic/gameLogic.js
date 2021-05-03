@@ -1,11 +1,16 @@
 class Glass {
-    constructor(name, ingredients=[]) { // TODO: добавить ограничение на вместимость
+    constructor(name, ingredients=[], limit=3) { // TODO: добавить ограничение на вместимость
         this.name = name;
         this.ingredients = ingredients;
+        this.limit = limit;
     }
 
-    addIngredient(ingredient) {
-        this.ingredients.push(ingredient);
+    tryAddIngredient(ingredient) {
+        if (this.ingredients.length < this.limit) {
+            this.ingredients.push(ingredient);
+            return true;
+        }
+        return false;
     }
 
     clear() {
@@ -50,8 +55,9 @@ class Topping extends Ingredient {
 }
 
 class Order {
-    constructor(pattern, time, price) {
-        this.patternGlass = pattern;
+    constructor(id, patternGlass, time, price) {
+        this.id = id;
+        this.patternGlass = patternGlass;
         this.time = time;
         this.price = price;
         this.status = "Not completed";
@@ -66,7 +72,6 @@ class Order {
         // TODO: заказ завершен, что делаем?
         if (order.status !== "Completed")
             order.status = "Fail";
-        clearTimeout(order._timeout);
     }
 
     chooseGlass(name) {
@@ -74,7 +79,7 @@ class Order {
     }
 
     addIngredientInGlass(ingredient) {
-        this.glass.addIngredient(ingredient);
+        this.glass.tryAddIngredient(ingredient);
         this.tryPassOrder()
     }
 
@@ -99,34 +104,26 @@ class Bar {
 
         this.max_orders = 2;
         this.money = 0;
-        this.ordersInProgess = [];
+        this.ordersInProgress = [];
     }
 
     start() {
         // TODO: начинаем уровень
-        setTimeout(this.end, this.time, this);
-        this._timeout = setTimeout(function func(bar) {
-            Bar.passOrder(bar);
-            bar._timeout = setTimeout(func, 300, bar)
-        }, 300, this)
+        this._timeout = setTimeout(this.end, this.time, this);
     }
 
-    static passOrder(bar) {
-        if (bar.ordersInProgess.length === 0)
-            return;
-
-        const answer = [];
-        for (const order of bar.ordersInProgess) {
-            if (order.status === "Completed") {
-                bar.money += order.price;
-            } else if (order.status === "Not completed") {
-                answer.push(order);
-            }
+    tryPassOrder(order) {
+        if (order.status === "Not completed") {
+            return false;
         }
-
-        bar.ordersInProgess = answer;
-        /*console.log(bar.ordersInProgess);
-        console.log(answer);*/
+        if (order.status === "Completed") {
+            this.money += order.price;
+        }
+        this.ordersInProgress = this.ordersInProgress.filter(ord => ord.id !== order.id);
+        if (this.orders.length === 0 && this.ordersInProgress.length === 0) {
+            this.end(this);
+        }
+        return true;
     }
 
     end(bar) {
@@ -135,8 +132,9 @@ class Bar {
     }
 
     tryGetNextOrder(order) {
-        if (this.ordersInProgess.length < this.max_orders) {
-            this.ordersInProgess.push(order);
+        if (this.ordersInProgress.length < this.max_orders) {
+            this.orders = this.orders.filter(ord => ord.id !== order.id);
+            this.ordersInProgress.push(order);
             order.start();
             return true;
         }
@@ -148,6 +146,7 @@ class Bar {
 // НИЖЕ НАШ ПЕРВЫЙ ТЕСТ ЛОГИКИ =)
 /*const bar = new Bar([
     new Order(
+        1,
         new Glass("1", [
             new Liquid("Vodka", 3, "white"),
             new Topping("Cherry", 5)
@@ -156,6 +155,7 @@ class Bar {
         10
     ),
         new Order(
+            2,
             new Glass("2", [
                 new Liquid("Vodka", 3, "white"),
                 new Topping("Cherry", 5)
@@ -164,6 +164,7 @@ class Bar {
             10
         ),
         new Order(
+            3,
             new Glass("3", [
                 new Liquid("Vodka", 3, "white"),
                 new Topping("Cherry", 5)
@@ -178,24 +179,36 @@ class Bar {
 
 bar.start();
 const order = bar.orders[0];
+console.log(bar.orders);
+console.log(bar.ordersInProgress);
 bar.tryGetNextOrder(order);
+console.log(bar.orders);
 order.chooseGlass("1");
 order.addIngredientInGlass(new Liquid("Vodka", 3, "white"));
 order.addIngredientInGlass(new Topping("Cherry", 5));
+console.log(bar.ordersInProgress);
+bar.tryPassOrder(order);
+console.log(bar.ordersInProgress);
 
-const order1 = bar.orders[1]
+const order1 = bar.orders[0]
 bar.tryGetNextOrder(order1);
+console.log(bar.ordersInProgress);
 order1.chooseGlass("2");
 order1.addIngredientInGlass(new Liquid("Vodka", 3, "white"));
+bar.tryPassOrder(order1);
+console.log(bar.ordersInProgress);
 
 
 setTimeout(function func() {
-    const order2 = bar.orders[2]
+    const order2 = bar.orders[0]
+    console.log(bar.orders);
     let flag = bar.tryGetNextOrder(order2);
+    console.log(bar.ordersInProgress);
     if (flag) {
         order2.chooseGlass("3");
         order2.addIngredientInGlass(new Liquid("Vodka", 3, "white"));
         order2.addIngredientInGlass(new Topping("Cherry", 5));
+        bar.tryPassOrder(order2);
     }
     else {
         setTimeout(func, 200)
@@ -203,7 +216,10 @@ setTimeout(function func() {
 }, 200);
 
 setTimeout(function () {
+    console.log(bar.ordersInProgress);
     order1.addIngredientInGlass(new Topping("Cherry", 5));
+    bar.tryPassOrder(order1);
+    console.log(bar.ordersInProgress);
 } , 1500);
 
 setTimeout(() => console.log(bar.money), 6000);*/
