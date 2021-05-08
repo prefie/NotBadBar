@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "задача-NotBadBar",
+      "appliesTo": "/",
+      "type": "launch"
+    },
+    {
+      "taskLabel": "задача-tests",
+      "appliesTo": "logic/tests/",
+      "type": "launch"
+    }
+  ]
+}
