@@ -1,0 +1,296 @@
+* {
+    border: none;
+    outline: 0;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100vh;
+}
+
+div {
+    border: 1px solid black;
+}
+
+.wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.bottom-nav-bar {
+    display: flex;
+    height: 25%;
+    justify-content: space-around;
+    background-color: #302621;
+}
+
+.cashbox,
+.time-table {
+    height: 80%;
+    width: 20%;
+    align-self: center;
+    display: flex;
+    background-color: black;
+    border-color: white;
+    justify-content: space-between;
+}
+
+.coin-image,
+.clock-image {
+    align-self: center;
+    background-position: right;
+    height: 100%;
+    width: 35%;
+    background-size: 60%;
+    background-repeat: no-repeat;
+}
+
+.coin-image {
+    background-image: url('./images/Coin.svg');
+}
+
+.clock-image {
+    background-image: url('images/Clock.svg');
+}
+
+.coin-value,
+.time-left {
+    text-align: center;
+    color: white;
+    width: 55%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 4vw;
+}
+
+.result-cocktail {
+    height: 90%;
+    width: 8%;
+    align-self: center;
+    display: flex;
+    background-color: black;
+    border: 2px solid white;
+}
+
+.progress-bar {
+    width: 20%;
+    height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+    background-color: black;
+    border-right: 2px solid white;
+}
+
+.moving-progress-bar {
+    height: 100%;
+    width: 100%;
+    background-color: green;
+    border: none;
+}
+
+.cocktail-image {
+    width: 80%;
+    height: 100%;
+    background-image: url('images/Cocktail.svg');
+    background-size: 3.5vw;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.table-wrapper {
+    width: 100%;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: none;
+}
+
+.table-surface {
+    height: 3vw;
+    width: 100%;
+    background-color: #4A2619;
+}
+
+.cocktail-in-process {
+    width: 5%;
+    position: absolute;
+    bottom: 30%;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.trash-can {
+    width: 8%;
+    position: absolute;
+    bottom: 30%;
+    right: 2%;
+    margin: auto;
+}
+
+.cupboard-wrapper {
+    width: 100%;
+    background-color: #cbbdad;
+    position: relative;
+    display: flex;
+    flex: 1;
+    border: none;
+}
+
+.first-cupboard {
+    background-image: url('images/Cupboard1.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    align-self: center;
+    width: 40vw;
+    height: 22.5vw;
+    margin-left: 6%;
+    border: none;
+}
+
+.first-shelf1,
+.second-shelf2 {
+    /*border: 2px solid yellow;*/
+    border: none;
+    width: 100%;
+    height: 2vw;
+    position: absolute;
+    bottom: 30%;
+}
+
+.bottle {
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    width: 6vw;
+    height: 12vw;
+    bottom: 0.8vw;
+    border: none;
+}
+
+.Absinthe {
+    background-image: url('images/Absinthe.svg');
+    left: 3vw;
+}
+
+.Aperol {
+    background-image: url('images/Aperol.svg');
+    left: 8vw;
+}
+
+.Blue-Curasao {
+    background-image: url('images/BlueCurasao.svg');
+    left: 13vw;
+}
+
+.Bombay-Sapphire {
+    background-image: url('images/BombaySapphire.svg');
+    left: 18vw;
+}
+
+.Campari {
+    background-image: url('images/Campari.svg');
+    left: 23vw;
+}
+
+.second-shelf1,
+.third-shelf2 {
+    /*border: 2px solid yellow;*/
+    border: none;
+    width: 100%;
+    height: 2vw;
+    position: absolute;
+    bottom: 0;
+}
+
+.decoration {
+    position: absolute;
+    bottom: 0.2vw;
+    width: 6vw;
+    height: 6vw;
+    border: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom;
+}
+
+.cherry {
+    background-image: url('images/Cherry.svg');
+    left: 4vw;
+}
+
+.lime {
+    background-image: url('images/Lime.svg');
+    left: 10vw;
+}
+
+.glass {
+    position: absolute;
+    border: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom;
+}
+
+.water-glass {
+    background-image: url('images/WaterGlass.svg');
+    right: 0.5vw;
+    height: 5vw;
+    width: 4vw;
+    bottom: 1vw;
+}
+
+.stemmed-glass {
+    height: 7vw;
+    width: 6vw;
+    bottom: 0.5vw;
+}
+
+.short-glass {
+    background-image: url('images/ShortGlass.svg');
+    right: 8.5vw;
+}
+
+.tall-glass {
+    background-image: url('images/TallGlass.svg');
+    right: 4vw;
+}
+
+.round-glass {
+    background-image: url('images/RoundGlass.svg');
+    right: -0.5vw;
+}
+
+.second-cupboard {
+    background-image: url('images/Cupboard2.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    align-self: center;
+    height: 22.5vw;
+    width: 16.875vw;
+    margin-left: 8%;
+    border: none;
+}
+
+.first-shelf2 {
+    /*border: 2px solid yellow;*/
+    border: none;
+    width: 100%;
+    height: 2vw;
+    position: absolute;
+    top: 25%;
+}
