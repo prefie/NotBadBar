@@ -1,0 +1,16 @@
+{
+  "name": "NotBadBar",
+  "version": "1.0.0",
+  "description": "Игра по управлению баром",
+  "main": "gameLogic.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^21.2.1",
+     "esm": "^3.2.25"
+
+  }
+}
