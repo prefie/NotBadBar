@@ -14,6 +14,16 @@ body {
 
 div {
     border: 1px solid black;
+    user-select: none;
+}
+
+img {
+    pointer-events: none;
+    user-select: none;
+}
+
+.animate-svg * {
+    transition: all 1s ease-in-out;
 }
 
 .wrapper {
@@ -28,7 +38,7 @@ div {
     display: flex;
     height: 25%;
     justify-content: space-around;
-    background-color: #302621;
+    background-color: black;
 }
 
 .cashbox,
@@ -37,7 +47,7 @@ div {
     width: 20%;
     align-self: center;
     display: flex;
-    background-color: black;
+    background-color: #424254;
     border-color: white;
     justify-content: space-between;
 }
@@ -50,6 +60,7 @@ div {
     width: 35%;
     background-size: 60%;
     background-repeat: no-repeat;
+    border: none;
 }
 
 .coin-image {
@@ -69,6 +80,8 @@ div {
     display: flex;
     align-items: center;
     font-size: 4vw;
+    border: none;
+    font-family: "Roboto", sans-serif;
 }
 
 .result-cocktail {
@@ -117,10 +130,13 @@ div {
 .table-surface {
     height: 3vw;
     width: 100%;
-    background-color: #4A2619;
+    background-color: #351330;
 }
 
-.cocktail-in-process {
+water-glass,
+short-glass,
+round-glass,
+tall-glass {
     width: 5%;
     position: absolute;
     bottom: 30%;
@@ -128,6 +144,29 @@ div {
     right: 0;
     margin: auto;
 }
+
+round-glass {
+    width: 8%;
+}
+
+/*.full-round-glass {*/
+/*    display: none;*/
+/*}*/
+/*.full-round-glass {*/
+/*    width: 8%;*/
+/*}*/
+
+/*.full-tall-glass {*/
+/*    display: none;*/
+/*}*/
+
+/*.full-water-glass {*/
+/*    display: none;*/
+/*}*/
+
+/*.full-short-glass {*/
+/*    display: none;*/
+/*}*/
 
 .trash-can {
     width: 8%;
@@ -139,7 +178,7 @@ div {
 
 .cupboard-wrapper {
     width: 100%;
-    background-color: #cbbdad;
+    background-color: #424254;
     position: relative;
     display: flex;
     flex: 1;
