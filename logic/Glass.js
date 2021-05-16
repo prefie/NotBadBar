@@ -1,10 +1,10 @@
 const { Topping } = require('./Ingredient');
 
 class Glass {
-    constructor(name, limit=3, liquids=[]) {
+    constructor(name, limit=3, liquids=[], topping=null) {
         this.name = name;
         this.liquids = liquids;
-        this.topping = null;
+        this.topping = topping;
         this.limit = limit;
     }
 
@@ -26,6 +26,7 @@ class Glass {
 
     clear() {
         this.liquids = [];
+        this.topping = null;
     }
 
     change(name) { // нужен ли?
