@@ -1,10 +1,10 @@
-<svg class='animate-svg' xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 146 265">
+<svg class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 146 265">
   <defs/>
-  <path id="third-layer" fill="transparent" d="M4.05 82.283h137.69l-8.359 26.862H14.249L4.05 82.283z"/>
-  <path fill="url(#third-linear)" d="M4.05 82.283h137.69l-8.359 26.862H14.249L4.05 82.283z"/>
-  <path id="second-layer" fill="transparent" d="M15.219 109.145h116.98l-12.998 13.864-14.442 9.532-32.597 10.105-33.836-10.105-13.864-9.532-9.243-13.864z"/>
-  <path id="first-layer" fill="transparent" d="M4.532 52.821l13.575-6.354 21.086-5.488 21.663-2.889H93.495l19.352 2.889 15.597 4.044 12.998 9.82 2.119 27.44H4.531V52.821z"/>
-  <path fill="url(#first-linear)" d="M4.532 52.821l13.575-6.354 21.086-5.488 21.663-2.889H93.495l19.352 2.889 15.597 4.044 12.998 9.82 2.119 27.44H4.531V52.821z"/>
+  <path id="first-layer" fill="transparent" d="M15.219 109.145h116.98l-12.998 13.864-14.442 9.532-32.597 10.105-33.836-10.105-13.864-9.532-9.243-13.864z"/>
+  <path fill="url(#first-linear)" d="M15.219 109.145h116.98l-12.998 13.864-14.442 9.532-32.597 10.105-33.836-10.105-13.864-9.532-9.243-13.864z"/>
+  <path id="second-layer" fill="transparent" d="M4.05 82.283h137.69l-8.359 26.862H14.249L4.05 82.283z"/>
+  <path id="third-layer" fill="transparent" d="M4.532 52.821l13.575-6.354 21.086-5.488 21.663-2.889H93.495l19.352 2.889 15.597 4.044 12.998 9.82 2.119 27.44H4.531V52.821z"/>
+  <path fill="url(#third-linear)" d="M4.532 52.821l13.575-6.354 21.086-5.488 21.663-2.889H93.495l19.352 2.889 15.597 4.044 12.998 9.82 2.119 27.44H4.531V52.821z"/>
   <path fill="#fff" d="M145.205 72.959a72.219 72.219 0 01-72.22 72.221 72.229 72.229 0 01-51.069-21.153A72.219 72.219 0 01.763 72.959h7.222a64.998 64.998 0 00110.961 45.961 65.007 65.007 0 0019.037-45.961h7.222zM.763 54.31h7.218v18.649H.763zM137.987 54.31h7.218v18.649h-7.218z"/>
   <path fill="#fff" d="M69.376 142.233h7.218v103.024h-7.218z"/>
   <path fill="#fff" d="M71.855 239.824a1.924 1.924 0 012.258 0l20.412 14.763c1.513 1.095.74 3.487-1.129 3.487H52.572c-1.868 0-2.642-2.392-1.129-3.487l20.412-14.763z"/>
@@ -12,13 +12,13 @@
   <rect width="3.079" height="13.786" x="15.597" y="78.437" fill="#fff" rx="1.539" transform="rotate(-1.262 15.597 78.437)"/>
   <rect width="3.079" height="13.786" x="20.055" y="85.294" fill="#fff" rx="1.539" transform="rotate(-1.262 20.055 85.294)"/>
   <defs>
-    <linearGradient id="third-linear" x1="72.742" x2="72.742" y1="82.283" y2="109.145" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#fff" stop-opacity="0"/>
-      <stop id="lower" offset="1" stop-color="transparent"/>
+    <linearGradient id="first-linear" x1="72.082" x2="72.082" y1="109.145" y2="142.646" gradientUnits="userSpaceOnUse">
+      <stop id="upper" stop-color="transparent"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
     </linearGradient>
-    <linearGradient id="first-linear" x1="74.046" x2="74.046" y1="13.477" y2="82.283" gradientUnits="userSpaceOnUse">
-      <stop id="upper" offset=".524" stop-color="transparent"/>
-      <stop offset="1" stop-color="transparent" stop-opacity=".91"/>
+    <linearGradient id="third-linear" x1="74.046" x2="74.046" y1="13.477" y2="82.283" gradientUnits="userSpaceOnUse">
+      <stop offset=".524" stop-color="transparent"/>
+      <stop id="lower" offset="1" stop-color="transparent" stop-opacity=".91"/>
     </linearGradient>
   </defs>
 </svg>
