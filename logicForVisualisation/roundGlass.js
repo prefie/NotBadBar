@@ -1,7 +1,7 @@
 class RoundGlass extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-                    <svg class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 237 286">
+                    <svg id="glass" class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 237 286">
                       <defs/>
                       <path id="first-layer" fill="transparent" d="M40.152 139.663h157.812l-18.367 35.251-26.611 16.914-34.789 8.235-36.545-8.235-26.88-19.191-14.62-32.974z"/>
                       <path fill="url(#first-linear)" d="M40.152 139.663h157.812l-18.367 35.251-26.611 16.914-34.789 8.235-36.545-8.235-26.88-19.191-14.62-32.974z"/>

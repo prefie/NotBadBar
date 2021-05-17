@@ -1,7 +1,7 @@
 class WaterGlass extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-                    <svg class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 174 246">
+                    <svg id="glass" class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 174 246">
                       <defs/>
                       <path id="first-layer" fill="transparent" d="M19.335 159.835h134.476l-5.379 41.04-3.68 28.554-16.421 6.551-48.41 5.379-50.677-11.93-3.114-21.76-6.795-47.834z"/>
                       <path fill="url(#first-linear)" d="M19.335 159.835h134.476l-5.379 41.04-3.68 28.554-16.421 6.551-48.41 5.379-50.677-11.93-3.114-21.76-6.795-47.834z"/>

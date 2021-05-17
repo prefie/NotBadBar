@@ -1,7 +1,7 @@
 class ShortGlass extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-                    <svg class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 146 265">
+                    <svg id="glass" class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 146 265">
                       <defs/>
                       <path id="first-layer" fill="transparent" d="M15.219 109.145h116.98l-12.998 13.864-14.442 9.532-32.597 10.105-33.836-10.105-13.864-9.532-9.243-13.864z"/>
                       <path fill="url(#first-linear)" d="M15.219 109.145h116.98l-12.998 13.864-14.442 9.532-32.597 10.105-33.836-10.105-13.864-9.532-9.243-13.864z"/>

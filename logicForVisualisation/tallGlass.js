@@ -1,7 +1,7 @@
 class TallGlass extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-                    <svg class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 146 317">
+                    <svg id="glass" class="animate-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 146 317">
                         <defs/>
                         <path id="first-layer" fill="transparent" d="M2.366 125.21h139.029l-11.102 37.968-23.544 22.138-34.788 9.488-36.545-9.488-21.084-22.138L2.366 125.21z"/>
                         <path fill="url(#first-linear)" d="M2.366 125.21h139.029l-11.102 37.968-23.544 22.138-34.788 9.488-36.545-9.488-21.084-22.138L2.366 125.21z"/>
