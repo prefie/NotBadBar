@@ -32,6 +32,7 @@ img {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    background-color: black;  /* если что, надо откатить */
 }
 
 .bottom-nav-bar {
@@ -332,4 +333,23 @@ round-glass {
     height: 2vw;
     position: absolute;
     top: 25%;
+}
+
+
+
+/*Если не понравится, откатим*/
+
+.logo-wrapper {
+    height: 50%;
+    width: 100%;
+    background-image: url("images/Logo.svg");
+    background-size: 90%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+}
+
+.buttons-wrapper {
+    height: 50%;
+    width: 100%;
 }
