@@ -2,15 +2,21 @@
   "name": "NotBadBar",
   "version": "1.0.0",
   "description": "Игра по управлению баром",
-  "main": "gameLogic.js",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "serve": "nodemon index.js",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "esm": "^3.2.25",
     "jest": "^21.2.1",
-     "esm": "^3.2.25"
-
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
