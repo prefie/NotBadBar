@@ -13,7 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "esm": "^3.2.25",
-    "jest": "^21.2.1",
+    "jest": "^26.6.3",
     "nodemon": "^2.0.7"
   },
   "dependencies": {
