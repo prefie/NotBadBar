@@ -1,4 +1,4 @@
-function moveProgressBar() {
+export function moveProgressBar() {
     let elem = document.getElementById("progress-bar");
     let height = 100;
     let id = setInterval(frame, 1000); // тут время на приготовление коктейля
