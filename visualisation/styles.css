@@ -151,31 +151,23 @@ round-glass {
     width: 8%;
 }
 
-/*.full-round-glass {*/
-/*    display: none;*/
-/*}*/
-/*.full-round-glass {*/
-/*    width: 8%;*/
-/*}*/
-
-/*.full-tall-glass {*/
-/*    display: none;*/
-/*}*/
-
-/*.full-water-glass {*/
-/*    display: none;*/
-/*}*/
-
-/*.full-short-glass {*/
-/*    display: none;*/
-/*}*/
-
 .trash-can {
-    width: 8%;
     position: absolute;
-    bottom: 30%;
-    right: 2%;
+    bottom: 0;
+    right: 0;
     margin: auto;
+    height: 12vw;
+    width: 8vw;
+}
+
+.trash {
+    width: 8vw;
+    bottom: 30%;
+    right: 1%;
+    margin: auto;
+    border: none;
+    position: absolute;
+    height: 12vw;
 }
 
 .cupboard-wrapper {

@@ -114,4 +114,12 @@ let interval = setInterval(() => {
     }
 
     timer.textContent = `${min}:${sec}`;
-}, 1000)
+}, 1000);
+
+let trash = document.querySelector(".trash");
+trash.addEventListener('click', function() {
+    let gl = document.querySelector('#glass');
+    if (gl !== null)
+        gl.remove();
+    layers = [];
+});
