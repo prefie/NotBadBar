@@ -1,7 +1,7 @@
-const { Glass } = require('./Glass');
+/*const { Glass } = require('./Glass');*/
+import {Glass} from  './Glass.js';
 
-
-class Order {
+export class Order {
     constructor(id, patternGlass, time, price) {
         this.id = id;
         this.patternGlass = patternGlass;
@@ -41,4 +41,4 @@ class Order {
     }
 }
 
-module.exports = { Order };
+/*module.exports = { Order };*/

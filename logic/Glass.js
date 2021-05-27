@@ -1,6 +1,6 @@
-const { Topping } = require('./Ingredient');
+import { Topping } from './Ingredient.js'
 
-class Glass {
+export class Glass {
     constructor(name, limit=3, liquids=[], topping=null) {
         this.name = name;
         this.liquids = liquids;
@@ -42,5 +42,5 @@ class Glass {
     }
 }
 
-module.exports = { Glass };
+/*module.exports = { Glass };*/
 

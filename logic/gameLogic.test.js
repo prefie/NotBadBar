@@ -1,7 +1,7 @@
-const {Bar} = require('./Bar');
-const {Glass} = require('./Glass')
-const {Order} = require('./Order')
-const { Liquid, Topping } = require('./Ingredient')
+import {Bar} from './Bar.js';
+import {Glass} from './Glass.js';
+import {Order} from './Order.js';
+import { Liquid, Topping } from './Ingredient.js';
 
 test('правильный заказ', () => {
     let order = new Order(

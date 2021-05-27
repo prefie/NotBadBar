@@ -1,7 +1,7 @@
-function moveProgressBar() {
+function moveProgressBar(milliseconds) {
     let elem = document.getElementById("progress-bar");
     let height = 100;
-    let id = setInterval(frame, 100); // тут время на приготовление коктейля
+    let id = setInterval(frame, milliseconds / 100); // тут время на приготовление коктейля
     function frame() {
         if (height <= 0) {
             clearInterval(id);
@@ -40,7 +40,7 @@ function changeColor(e) {
 
 let chooseGlass = null;
 let layers = [];
-moveProgressBar();
+moveProgressBar(10000);
 
 let glasses = document.querySelectorAll('.glass');
 for (let glass of glasses) {
@@ -49,13 +49,34 @@ for (let glass of glasses) {
         if (layers.length !== 0)
             return;
 
-        let gl = document.querySelector('#glass');
-        if (gl !== null)
-            gl.remove();
-
+        deleteGlass();
         chooseGlass = document.createElement(classGlass);
+        requestGlass(classGlass).then((data) => {
+            console.log(data); // JSON data parsed by `response.json()` call
+        }).catch((data) => console.log(data));
         document.getElementsByClassName('table-wrapper')[0].prepend(chooseGlass);
     });
+}
+async function requestGlass (id) {
+    let response = await fetch('/game/chooseGlass/'+ id, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: id
+    });
+    return await response.json();
+}
+
+async function requestL (id) {
+    let response = await fetch('/game/chooseLiquids/'+ id, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: id
+    });
+    return await response.json();
 }
 
 let colors = {
@@ -76,18 +97,30 @@ for (const bottle of bottles) {
             let upper = document.getElementById('upper');
             let lower = document.getElementById('lower');
 
+            const name = bottle.classList[bottle.classList.length - 1];
             if (layers.length === 0) {
-                firstLayer.style.fill = colors[bottle.classList[bottle.classList.length - 1]];
-                layers.push(colors[bottle.classList[bottle.classList.length - 1]]);
+                firstLayer.style.fill = colors[name];
+                drawLayer(name);
             } else if (layers.length === 1) {
-                upper.style.stopColor = colors[bottle.classList[bottle.classList.length - 1]];
-                secondLayer.style.fill = colors[bottle.classList[bottle.classList.length - 1]];
-                layers.push(colors[bottle.classList[bottle.classList.length - 1]]);
+                upper.style.stopColor = colors[name];
+                secondLayer.style.fill = colors[name];
+                drawLayer(name);
             } else if (layers.length === 2) {
                 lower.style.stopColor = layers[1];
-                thirdLayer.style.fill = colors[bottle.classList[bottle.classList.length - 1]];
-                layers.push(colors[bottle.classList[bottle.classList.length - 1]]);
+                thirdLayer.style.fill = colors[name];
+                drawLayer(name);
             }
+        }
+    });
+}
+
+function drawLayer(name) {  // TODO: change name
+    layers.push(colors[name]);
+    requestL(name).then((data) => {
+        console.log(data);
+        changeMoney(data['money']);
+        if (data['status'] === 'Completed') {
+            setTimeout(deleteGlass, 1000);
         }
     });
 }
@@ -117,9 +150,27 @@ let interval = setInterval(() => {
 }, 1000);
 
 let trash = document.querySelector(".trash");
-trash.addEventListener('click', function() {
+trash.addEventListener('click', deleteGlass);
+
+function deleteGlass() {
     let gl = document.querySelector('#glass');
     if (gl !== null)
         gl.remove();
     layers = [];
-});
+}
+
+function changeMoney(m) {
+    let money = document.querySelector(".coin-value");
+    money.textContent = `${m}`;
+}
+/*//ToDO money
+
+let money = document.querySelector(".coin-value");
+const p = document.createElement('p');
+money.childNodes[0].remove();
+p.innerHTML = bar.money;
+money.append(p);
+
+ */
+
+

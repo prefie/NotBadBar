@@ -1,4 +1,4 @@
-class Bar {
+export class Bar {
     constructor(orders, glasses, liquids, toppings, time, levelTarget, maxOrders=2) {
         this.orders = orders;
         this.glasses = glasses;
@@ -55,4 +55,4 @@ class Bar {
     }
 }
 
-module.exports = { Bar };
+/*module.exports = { Bar };*/
