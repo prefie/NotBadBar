@@ -20,7 +20,7 @@ export class Bar {
     }
 
     tryPassOrder(order) {
-        if (order.status === "Not completed") {
+        if (order.status === "Not completed" || order.status === "Fail") {
             return false;
         }
         if (order.status === "Completed") {
