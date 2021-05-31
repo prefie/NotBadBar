@@ -37,58 +37,78 @@ img {
 
 .bottom-nav-bar {
     display: flex;
-    height: 25%;
     justify-content: space-around;
     background-color: black;
+    padding: 2vw;
 }
 
 .cashbox,
 .time-table {
-    height: 80%;
     width: 20%;
-    align-self: center;
     display: flex;
     background-color: #424254;
     border-color: white;
-    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.cashbox {
+    justify-content: space-evenly;
+}
+
+.time-table {
+    justify-content: space-around;
+}
+
+.stars {
+    width: 100%;
+    display: flex;
+    justify-content: inherit;
+    align-items: flex-start;
+    border: none;
+}
+
+.first-star,
+.second-star,
+.third-star {
+    font-size: 4vw;
+    color: lightgrey;
+    display: block;
+    border: none;
 }
 
 .coin-image,
 .clock-image {
-    align-self: center;
-    background-position: right;
-    height: 100%;
-    width: 35%;
-    background-size: 60%;
-    background-repeat: no-repeat;
+    display: block;
+    width: 25%;
+    padding: 0.4vw;
     border: none;
-}
-
-.coin-image {
-    background-image: url('images/Coin.svg');
-}
-
-.clock-image {
-    background-image: url('images/Clock.svg');
 }
 
 .coin-value,
 .time-left {
-    text-align: center;
     color: white;
-    width: 55%;
-    height: 100%;
     display: flex;
     align-items: center;
     font-size: 4vw;
     border: none;
     font-family: "Roboto", sans-serif;
-    font-weight: bold;
+}
+
+.time-left {
+    height: 100%;
+}
+
+.result-cocktails {
+    align-self: center;
+    height: 90%;
+    width: 45%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .result-cocktail {
-    height: 90%;
-    width: 8%;
+    height: 100%;
+    width: 20%;
     align-self: center;
     display: flex;
     background-color: black;
@@ -133,22 +153,43 @@ img {
     height: 3vw;
     width: 100%;
     background-color: #351330;
+    display: flex;
+    justify-content: space-around;
 }
 
-water-glass,
-short-glass,
-round-glass,
-tall-glass {
-    width: 5%;
+.cocktails-in-progress {
+    height: 350%;
     position: absolute;
-    bottom: 30%;
-    left: 0;
-    right: 0;
-    margin: auto;
+    bottom: 1vw;
+    width: 45%;
+    display: flex;
+    justify-content: space-between;
+    border: none;
 }
 
-round-glass {
-    width: 8%;
+.first-glass,
+.second-glass,
+.third-glass,
+.fourth-glass {
+    height: 100%;
+    width: 20%;
+    border: none;
+    display: flex;
+}
+
+#glass:not(.usual-glass) {
+    height: 100%;
+    width: 100%;
+}
+
+.usual-glass {
+    height: 80%;
+    width: 100%;
+    align-self: flex-end;
+}
+
+water-glass {
+    display: flex;
 }
 
 .trash-can {
@@ -156,18 +197,18 @@ round-glass {
     bottom: 0;
     right: 0;
     margin: auto;
-    height: 12vw;
-    width: 8vw;
+    height: 15vw;
+    width: 10vw;
 }
 
 .trash {
-    width: 8vw;
+    width: 10vw;
     bottom: 30%;
     right: 1%;
     margin: auto;
     border: none;
     position: absolute;
-    height: 12vw;
+    height: 15vw;
 }
 
 .cupboard-wrapper {
@@ -194,7 +235,6 @@ round-glass {
 
 .first-shelf1,
 .second-shelf2 {
-    /*border: 2px solid yellow;*/
     border: none;
     width: 100%;
     height: 2vw;
@@ -240,7 +280,6 @@ round-glass {
 
 .second-shelf1,
 .third-shelf2 {
-    /*border: 2px solid yellow;*/
     border: none;
     width: 100%;
     height: 2vw;
@@ -250,23 +289,40 @@ round-glass {
 
 .decoration {
     position: absolute;
-    bottom: 0.2vw;
-    width: 6vw;
-    height: 6vw;
+    bottom: 0.5vw;
+    width: 5vw;
+    height: 5vw;
     border: none;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: bottom;
 }
 
-.cherry {
+.cherries {
     background-image: url('images/Cherry.svg');
-    left: 4vw;
+    left: 3.5vw;
 }
 
-.lime {
+.limes {
     background-image: url('images/Lime.svg');
-    left: 10vw;
+    left: 8.5vw;
+}
+
+.olives {
+    background-image: url('images/Olives.svg');
+    left: 13.5vw;
+}
+
+.strawberries {
+    background-image: url('images/Strawberries.svg');
+    left: 18.5vw;
+}
+
+.cherry,
+.lime,
+.olive,
+.strawberry {
+    visibility: hidden;
 }
 
 .glass {
@@ -320,7 +376,6 @@ round-glass {
 }
 
 .first-shelf2 {
-    /*border: 2px solid yellow;*/
     border: none;
     width: 100%;
     height: 2vw;
