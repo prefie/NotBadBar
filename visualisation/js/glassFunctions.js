@@ -1,5 +1,3 @@
-import {requestGlass} from "./requests";
-
 // Проверка, что стакан находится в пределах картинки готового заказа (только по горизонтали)
 export function checkGlassNearImage(glass, glassCopy) {
     let isNearImage = false;

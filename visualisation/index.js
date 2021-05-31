@@ -1,8 +1,8 @@
-import {changeColor} from './js/functions';
-import {addDragAndDropEvent} from './js/dragAndDrop';
-import {requestL, requestOrder,requestGlass} from './js/requests';
-import {checkGlassNearImage} from './js/glassFunctions';
-import {colors} from './js/config';
+import {changeColor} from './js/functions.js';
+import {addDragAndDropEvent} from './js/dragAndDrop.js';
+import {requestL, requestOrder,requestGlass} from './js/requests.js';
+import {checkGlassNearImage} from './js/glassFunctions.js';
+import {colors} from './js/config.js';
 
 function moveProgressBar(milliseconds, orderId='1') {
     let elem = document.getElementById("progress-bar");

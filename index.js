@@ -2,8 +2,8 @@ import express from 'express';
 import path from 'path';
 import hbs from 'express-handlebars';
 import {Glass} from './logic/Glass.js';
-import {Bar, generateBar, generateOrder} from './logic/Bar.js';
-import {Liquid, Topping} from './logic/Ingredient.js';
+import {Bar, generateBar} from './logic/Bar.js';
+import {Liquid} from './logic/Ingredient.js';
 import {Order} from './logic/Order.js';
 
 
