@@ -60,7 +60,7 @@ function tryPutGlass(glass, glassCopy, classGlass) {
     requestGlass(classGlass).then((data) => {
         console.log(data); // JSON data parsed by `response.json()` call
     }).catch((data) => console.log(data));
-    document.getElementsByClassName('table-wrapper')[0].prepend(chooseGlass);
+    document.getElementsByClassName('first-glass')[0].prepend(chooseGlass);
     glassesAtBarHandler();
 }
 
