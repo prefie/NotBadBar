@@ -92,6 +92,7 @@ img {
     font-size: 4vw;
     border: none;
     font-family: "Roboto", sans-serif;
+    font-weight: bold;
 }
 
 .time-left {

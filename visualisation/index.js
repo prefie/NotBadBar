@@ -26,18 +26,16 @@ function moveProgressBar(milliseconds, orderId='1') {
     return id;
 }
 
-const orders = [];
-const maxOrders = 4;
-for (let i = 0; i < maxOrders; i++) {
-    orders.push({
+const orders = {};
+for (const gl of ['first-glass', 'second-glass', 'third-glass', 'fourth-glass']) {
+    orders[gl] = {
         'chooseGlass': null,
-        'layers': []
-    });
+        'layers': [],
+        'progressBar': null
+    };
 }
 
-let chooseGlass = null;
 let chooseBottle = null;
-let layers = [];
 let progressBar = moveProgressBar(6000);
 
 let glasses = document.querySelectorAll('.glass');
@@ -51,17 +49,21 @@ function tryPutGlass(glass, glassCopy, classGlass) {
         glassCopy.parentNode.removeChild(glassCopy);
     }
 
-    if (!checkGlassNearImage(glass, glassCopy) || layers.length !== 0) {
+    const {isNearImage, place} = checkGlassNearImage(glass, glassCopy);
+
+    if (!isNearImage || orders[place].layers.length !== 0) {
         return;
     }
 
-    deleteGlass();
-    chooseGlass = document.createElement(classGlass);
+    deleteGlass(place);
+
+    orders[place].chooseGlass = document.createElement(classGlass);
     requestGlass(classGlass).then((data) => {
         console.log(data); // JSON data parsed by `response.json()` call
     }).catch((data) => console.log(data));
-    document.getElementsByClassName('first-glass')[0].prepend(chooseGlass);
-    glassesAtBarHandler();
+    document.getElementsByClassName(place)[0].prepend(orders[place].chooseGlass);
+    //glassesAtBarHandler(place);
+    return place;
 }
 
 let bottles = document.querySelectorAll('.bottle');
@@ -82,61 +84,67 @@ function tryPourLiquid(bottle, bottleCopy) {
 
     bottle.style.visibility = 'visible';
 
-    const gl = document.querySelector('#glass');
-    if (!gl) {
-        return;
-    }
-    const glRect = gl.getBoundingClientRect();
-    const gLeft = glRect.left;
-    const gRight = glRect.right;
-    const gTop = glRect.top;
-    const gBottom = glRect.bottom;
-    const gWight = gRight - gLeft;
-    const gHeight = gBottom - gTop;
+    const gl = document.querySelector('.cocktails-in-progress');
 
-    if (bRight > gRight + gWight
-        || bLeft < gLeft - gWight
-        || bTop < gTop - gHeight
-        || bBottom > gBottom + gHeight) {
-        return;
-    }
+    for (const child of gl.children) {
+        if (child.children.length < 1)
+            continue;
 
-    chooseBottle = bottle.classList[bottle.classList.length - 1];
-    glassesAtBarHandler();
-}
+        let b = child.children[0].children[0];
 
-function glassesAtBarHandler () {
-    const glassesAtBar = document.querySelectorAll('#glass');
-    for (const glass of glassesAtBar) {
-        if (chooseBottle === null || chooseGlass === null) {
+        function f (b) {
+            const glRect = b.getBoundingClientRect();
+            const gLeft = glRect.left;
+            const gRight = glRect.right;
+            const gTop = glRect.top;
+            const gBottom = glRect.bottom;
+            const gWight = gRight - gLeft;
+            const gHeight = gBottom - gTop;
+
+            return !(bRight > gRight + gWight
+                || bLeft < gLeft - gWight
+                || bTop < gTop - gHeight
+                || bBottom > gBottom + gHeight);
+        }
+
+        if (f(b)) {
+            chooseBottle = bottle.classList[bottle.classList.length - 1];
+            glassesAtBarHandler(child.className.toLowerCase());
             return;
         }
-
-        let firstLayer = document.getElementById('first-layer');
-        let secondLayer = document.getElementById('second-layer');
-        let thirdLayer = document.getElementById('third-layer');
-        let upper = document.getElementById('upper');
-        let lower = document.getElementById('lower');
-
-        if (layers.length === 0) {
-            firstLayer.style.fill = colors[chooseBottle];
-            drawLayer(chooseBottle);
-        } else if (layers.length === 1) {
-            upper.style.stopColor = colors[chooseBottle];
-            secondLayer.style.fill = colors[chooseBottle];
-            drawLayer(chooseBottle);
-        } else if (layers.length === 2) {
-            lower.style.stopColor = layers[1];
-            thirdLayer.style.fill = colors[chooseBottle];
-            drawLayer(chooseBottle);
-        }
-
-        chooseBottle = null;
     }
+}
+
+function glassesAtBarHandler (chooseGlass) {
+    if (chooseBottle === null || chooseGlass === null) {
+        return;
+    }
+
+    let doc = document.querySelector('.' + chooseGlass);
+    let firstLayer = doc.querySelector('#first-layer');
+    let secondLayer = doc.querySelector('#second-layer');
+    let thirdLayer = doc.querySelector('#third-layer');
+    let upper = doc.querySelector('#upper');
+    let lower = doc.querySelector('#lower');
+
+    if (orders[chooseGlass].layers.length === 0) {
+        firstLayer.style.fill = colors[chooseBottle];
+        drawLayer(chooseBottle, chooseGlass);
+    } else if (orders[chooseGlass].layers.length === 1) {
+        //upper.style.stopColor = colors[chooseBottle]; // TODO: сломались градиенты, надо чинить
+        secondLayer.style.fill = colors[chooseBottle];
+        drawLayer(chooseBottle, chooseGlass);
+    } else if (orders[chooseGlass].layers.length === 2) {
+        //lower.style.stopColor = orders[chooseGlass].layers[1];
+        thirdLayer.style.fill = colors[chooseBottle];
+        drawLayer(chooseBottle, chooseGlass);
+    }
+
+    chooseBottle = null;
 }
 
 function drawLayer(name, orderId) {  // TODO: change name
-    layers.push(colors[name]);
+    orders[orderId].layers.push(colors[name]);
     requestL(name, orderId).then((data) => {
         console.log(data);
         changeMoney(data['money']);
@@ -175,11 +183,11 @@ let interval = setInterval(() => {
 let trash = document.querySelector(".trash");
 trash.addEventListener('click', deleteGlass);
 
-function deleteGlass() {
-    let gl = document.querySelector('#glass');
-    if (gl !== null)
-        gl.remove();
-    layers = [];
+function deleteGlass(place) {
+    let gl = document.querySelector('.' + place);
+    if (gl !== null && gl.children.length !== 0)
+        gl.removeChild(gl.children[0]);
+    orders[place].layers = [];
 }
 
 function changeMoney(m) {
