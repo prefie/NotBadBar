@@ -169,11 +169,7 @@ let interval = setInterval(() => {
         sec--;
     }
 
-    if (sec < 10) {
-        sec = `0${sec}`;
-    }
-
-    timer.textContent = `${min}:${sec}`;
+    timer.textContent = `${min}:${(sec+'').padStart(2,'0')}`;
 }, 1000);
 
 let trash = document.querySelector(".trash");
