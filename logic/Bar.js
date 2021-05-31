@@ -1,6 +1,6 @@
-import {glasses, liquids, toppings} from '../visualisation/js/config';
-import {Order} from './Order';
-import {Glass} from './Glass';
+import {Order} from './Order.js';
+import {Glass} from './Glass.js';
+import {Liquid, Topping} from "./Ingredient.js";
 
 export class Bar {
     constructor(orders, glasses, liquids, toppings, time, levelTarget, maxOrders=2) {
@@ -94,6 +94,28 @@ export function generateBar(ordersCount, maxLayers, levelTarget, ) {
 
     return new Bar(orders, glasses, liquids, toppings, time, levelTarget, 4);
 }
+
+export const glasses = [
+    "water-glass",
+    "short-glass",
+    "tall-glass",
+    "round-glass"
+];
+
+export const liquids = [
+    new Liquid("Absinthe", 4),
+    new Liquid("Aperol", 5),
+    new Liquid('Blue-Curasao', 7),
+    new Liquid('Bombay-Sapphire', 9),
+    new Liquid("Campari", 7)
+];
+
+export const toppings = [
+    new Topping("Lime", 10),
+    new Topping("Cherry", 10),
+    new Topping("Olive", 5),
+    new Topping("Strawberry", 8)
+];
 
 
 /*module.exports = { Bar };*/
