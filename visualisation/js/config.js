@@ -1,5 +1,5 @@
 export const colors = {
-    'Absinthe': 'green',
+    'Absinthe': 'limegreen',
     'Aperol': 'orange',
     'Blue-Curasao': 'blue',
     'Bombay-Sapphire': 'lightskyblue',

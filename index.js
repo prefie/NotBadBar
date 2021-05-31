@@ -49,8 +49,11 @@ app.get('/', (_, res) => {
 });
 
 app.get('/game', (req, res) => {
-    res.render('game');
     bar = generateBar(10, 3, 100);
+    const time = bar.time / 1000;
+    const min = Math.floor(time / 60);
+    const sec = (time % 60 + '').padStart(2, '0');
+    res.render('game', { barTime: `${min}:${sec}` });
     bar.start();
     order = bar.orders.pop();
     bar.tryGetNextOrder(order);
