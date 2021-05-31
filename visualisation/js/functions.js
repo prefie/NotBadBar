@@ -13,7 +13,7 @@ export function moveProgressBar() {
     }
 }
 
-function changeColor(e) {
+export function changeColor(e) {
     if (e.style.height) {
         let height = +(e.style.height).slice(0, -1);
         switch(true) {
