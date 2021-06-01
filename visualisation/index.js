@@ -138,15 +138,15 @@ function glassesAtBarHandler (chooseGlass) {
     let lower = doc.querySelector('#lower');
 
     if (places[chooseGlass].layers.length === 0) {
-        firstLayer.style.fill = colors[chooseBottle];
+        firstLayer.setAttribute('class', colors[chooseBottle]);
         drawLayer(chooseBottle, chooseGlass);
     } else if (places[chooseGlass].layers.length === 1) {
-        //upper.style.stopColor = colors[chooseBottle]; // TODO: сломались градиенты, надо чинить
-        secondLayer.style.fill = colors[chooseBottle];
+        // upper.setAttribute('class', colors[chooseBottle]); // TODO: сломались градиенты, надо чинить
+        secondLayer.setAttribute('class', colors[chooseBottle]);
         drawLayer(chooseBottle, chooseGlass);
     } else if (places[chooseGlass].layers.length === 2) {
-        //lower.style.stopColor = orders[chooseGlass].layers[1];
-        thirdLayer.style.fill = colors[chooseBottle];
+        // lower.setAttribute('class', places[chooseGlass].layers[1]);
+        thirdLayer.setAttribute('class', colors[chooseBottle]);
         drawLayer(chooseBottle, chooseGlass);
     }
 

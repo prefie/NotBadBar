@@ -355,7 +355,7 @@ water-glass {
     right: 0.5vw;
     height: 5vw;
     width: 4vw;
-    bottom: 1vw;
+    bottom: 0.3vw;
 }
 
 .stemmed-glass {
@@ -430,4 +430,29 @@ water-glass {
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
+}
+
+.limegreen {
+    fill: limegreen;
+    stop-color: limegreen;
+}
+
+.blue {
+    fill: blue;
+    stop-color: blue;
+}
+
+.lightskyblue {
+    fill: lightskyblue;
+    stop-color: lightskyblue;
+}
+
+.red {
+    fill: red;
+    stop-color: red;
+}
+
+.orange {
+    fill: orange;
+    stop-color: orange;
 }
