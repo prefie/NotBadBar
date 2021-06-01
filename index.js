@@ -1,10 +1,11 @@
 import express from 'express';
 import path from 'path';
 import hbs from 'express-handlebars';
-import {Glass} from './logic/Glass.js';
-import {Bar, generateBar} from './logic/Bar.js';
+import {generateBar} from './logic/Bar.js';
 import {Liquid} from './logic/Ingredient.js';
-import {Order} from './logic/Order.js';
+import {liquids} from "./logic/Bar.js";
+import {Order} from "./logic/Order.js";
+import {Glass} from "./logic/Glass.js";
 
 
 const port = process.env.PORT ?? 3000;
@@ -15,23 +16,8 @@ app.set('view engine', 'hbs');
 
 app.use(express.static('logic'))
 
-let order = null;
-let bar = new Bar([new Order(
-    1, new Glass('tall-glass', 2, [
-        new Liquid('Campari', 4, 'red')]
-    ),
-    6000,
-    10
-    ), new Order(
-    2, new Glass('tall-glass', 2, [
-        new Liquid('Campari', 4, 'red')]
-    ),
-    6000,
-    10
-    )], ['1', '2', '3', '4'],
-    ['Campari'],
-    ['Cherry', 'Lime'],
-    6000);
+let bar = null;
+let orders = {};
 
 app.engine(
     'hbs',
@@ -49,57 +35,80 @@ app.get('/', (_, res) => {
 });
 
 app.get('/game', (req, res) => {
-    res.render('game');
-    bar = generateBar(10, 3, 100);
+    bar = generateBar(10, 3, 14);
     bar.start();
-    order = bar.orders.pop();
-    bar.tryGetNextOrder(order);
-    console.log(bar);
+    const time = bar.time / 1000;
+    const min = Math.floor(time / 60);
+    const sec = (time % 60 + '').padStart(2, '0');
+    res.render('game', {barTime: `${min}:${sec}`});
+});
+
+app.post('/game/firstOrder', (req, res) => {
+    bar.orders.push(new Order(228, new Glass('water-glass', 3, [new Liquid('Campari', 7)]), 10000, 21))
+    const order = bar.orders.pop();
+    orders[order.id] = order;
+
+    bar.tryGetNextOrder(orders[order.id]);
+    console.log(order);
+    res.send(JSON.stringify({
+        'id': order.id,
+        'timeout': order.time,
+        'target': bar.levelTarget
+    }))
 });
 
 app.get('/main', (req, res) => {
     res.render('start');
 });
 
-app.post('/game/chooseGlass/:glassId', (req, res) => {
-    order.chooseGlass(req.params['glassId']);
-    res.send(JSON.stringify(order));
+app.post('/game/chooseGlass/:glassId/:ord', (req, res) => {
+    console.log(orders);
+    orders[req.params['ord']].chooseGlass(req.params['glassId']);
+    res.send(JSON.stringify(orders[req.params['ord']]));
 });
 
-const prices = {
-    'Absinthe': 5,
-    'Aperol': 3,
-    'Blue-Curasao': 4,
-    'Bombay-Sapphire': 5,
-    'Campari': 4
-};
+const prices = {};
+for (let i of liquids) {
+    prices[i.name] = i.price;
+}
 
-app.post('/game/getOrder/:ord', (req, res) => {
+app.post('/game/getOrder', (req, res) => {
     if (bar.orders.length > 0) {
-        order = bar.orders.pop();
-        bar.tryGetNextOrder(order);
-        res.send(JSON.stringify(order));
+        let order = bar.orders.pop();
+        orders[order.id] = order;
+
+        bar.tryGetNextOrder(orders[order.id]);
+        res.send(JSON.stringify(orders[order.id]));
     } else {
         res.send(); // TODO: тут конец уровня
     }
 })
 
 app.post('/game/chooseLiquids/:liq/:ord', (req, res) => {
-    order.addIngredientInGlass(new Liquid(req.params['liq'], prices[req.params['liq']]));
-    const status = bar.tryPassOrder(order);
+    orders[req.params['ord']].addIngredientInGlass(new Liquid(req.params['liq'], prices[req.params['liq']]));
+    console.log('____')
+    console.log(orders[req.params['ord']].glass);
+    console.log(orders[req.params['ord']].patternGlass);
+    const status = bar.tryPassOrder(orders[req.params['ord']]);
+    console.log(status)
+    console.log('____')
 
     const answer = {
+        'newId': null,
         'money': bar.money,
         'status': 'wait',
         'timeout': 'none'
     }
 
     if (status && bar.orders.length > 0) {
-        order = bar.orders.pop();
+        let order = bar.orders.pop();
+        orders[order.id] = order;
+
+        answer['newId'] = orders[order.id].id;
         answer['status'] = 'next';
-        answer['timeout'] = order.time;
+        answer['timeout'] = orders[order.id].time;
         res.send(JSON.stringify(answer));
-        bar.tryGetNextOrder(order);
+        bar.tryGetNextOrder(orders[order.id]);
     } else if (status) {
         if (bar.ordersInProgress.length < 1) {
             answer['status'] = 'end'
@@ -107,7 +116,7 @@ app.post('/game/chooseLiquids/:liq/:ord', (req, res) => {
         } else {
             answer['status'] = 'delete';
             res.send(JSON.stringify(answer));
-            order = null;
+            delete orders[req.params['ord']];
         }
     } else {
         res.send(JSON.stringify(answer));

@@ -1,4 +1,5 @@
 export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params=[]){
+    let res;
     obj.addEventListener('mousedown', (event) => {
         const objCopy = obj.cloneNode(true);
         if (hidden) {
@@ -33,7 +34,8 @@ export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params=[]){
 
         objCopy.addEventListener('mouseup', () => {
             document.removeEventListener('mousemove', onMouseMove);
-            actionOnMouseUp(obj, objCopy, ...params);
+            res = actionOnMouseUp(obj, objCopy, ...params);
         });
-    })
+    });
+    return res;
 }
