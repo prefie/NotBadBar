@@ -2,7 +2,7 @@
 export function checkGlassNearImage(glass, glassCopy) {
     let isNearImage = false;
     let place = null;
-    const resultCocktails = document.querySelectorAll('.result-cocktail')
+    const resultCocktails = document.querySelectorAll('.order')
     for (let cocktail of resultCocktails) {
 
         const classList = cocktail.classList;

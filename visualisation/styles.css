@@ -56,7 +56,7 @@ img {
 }
 
 .time-table {
-    justify-content: space-around;
+    justify-content: space-evenly;
 }
 
 .stars {
@@ -101,15 +101,15 @@ img {
 
 .result-cocktails {
     align-self: center;
-    height: 90%;
+    height: 120%;
     width: 45%;
     display: flex;
     justify-content: space-between;
 }
 
-.result-cocktail {
+.order {
     height: 100%;
-    width: 20%;
+    width: 22%;
     align-self: center;
     display: flex;
     background-color: black;
@@ -132,13 +132,29 @@ img {
     border: none;
 }
 
-.cocktail-image {
-    width: 80%;
+.first-order,
+.second-order,
+.third-order,
+.fourth-order {
+    width: 7vw;
+    height: 12vw;
+    display: flex;
+}
+
+.first-order > *,
+.second-order > *,
+.third-order > *,
+.fourth-order > * {
+    width: 100%;
     height: 100%;
-    background-image: url('images/Cocktail.svg');
-    background-size: 3.5vw;
-    background-repeat: no-repeat;
-    background-position: center;
+    visibility: hidden;
+}
+
+.first-order > round-glass,
+.second-order > round-glass,
+.third-order > round-glass,
+.fourth-order > round-glass {
+    height: 120%;
 }
 
 .table-wrapper {
@@ -162,7 +178,7 @@ img {
     height: 350%;
     position: absolute;
     bottom: 1vw;
-    width: 45%;
+    width: 40%;
     display: flex;
     justify-content: space-between;
     border: none;
@@ -339,7 +355,7 @@ water-glass {
     right: 0.5vw;
     height: 5vw;
     width: 4vw;
-    bottom: 1vw;
+    bottom: 0.3vw;
 }
 
 .stemmed-glass {
@@ -389,16 +405,58 @@ water-glass {
 /*Если не понравится, откатим*/
 
 .logo-wrapper {
-    height: 50%;
+    height: 60%;
     width: 100%;
-    background-image: url("images/Logo.svg");
-    background-size: 90%;
+    background-image: url("images/NotBadBar.png");
+    background-size: 100%;
     background-repeat: no-repeat;
     background-position: center;
     border: none;
 }
 
 .buttons-wrapper {
-    height: 50%;
+    height: 40%;
     width: 100%;
+}
+
+.start-button {
+    padding: 2vw 14vw;
+    margin: 0 auto;
+    background-color: #351330;
+    border: 2px solid white;
+    font-size: 3vw;
+    color: white;
+    position: relative;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.limegreen {
+    fill: limegreen;
+    stop-color: limegreen;
+}
+
+.blue {
+    fill: blue;
+    stop-color: blue;
+}
+
+.lightskyblue {
+    fill: lightskyblue;
+    stop-color: lightskyblue;
+}
+
+.red {
+    fill: red;
+    stop-color: red;
+}
+
+.orange {
+    fill: orange;
+    stop-color: orange;
+}
+
+.visible-topping {
+    visibility: visible;
 }
