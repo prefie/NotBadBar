@@ -456,3 +456,7 @@ water-glass {
     fill: orange;
     stop-color: orange;
 }
+
+.visible-topping {
+    visibility: visible;
+}
