@@ -136,17 +136,25 @@ img {
 .second-order,
 .third-order,
 .fourth-order {
-    width: 80%;
-    height: 100%;
+    width: 7vw;
+    height: 12vw;
+    display: flex;
 }
 
-.cocktail-image {
-    width: 80%;
+.first-order > *,
+.second-order > *,
+.third-order > *,
+.fourth-order > * {
+    width: 100%;
     height: 100%;
-    background-image: url('images/Cocktail.svg');
-    background-size: 3.5vw;
-    background-repeat: no-repeat;
-    background-position: center;
+    visibility: hidden;
+}
+
+.first-order > round-glass,
+.second-order > round-glass,
+.third-order > round-glass,
+.fourth-order > round-glass {
+    height: 120%;
 }
 
 .table-wrapper {
@@ -170,7 +178,7 @@ img {
     height: 350%;
     position: absolute;
     bottom: 1vw;
-    width: 45%;
+    width: 40%;
     display: flex;
     justify-content: space-between;
     border: none;
