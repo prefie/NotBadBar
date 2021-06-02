@@ -238,7 +238,7 @@ water-glass {
 }
 
 .first-cupboard {
-    background-image: url('images/Cupboard1.svg');
+    background-image: url('/visualisation/images/Cupboard1.svg');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -271,27 +271,27 @@ water-glass {
 }
 
 .Absinthe {
-    background-image: url('images/Absinthe.svg');
+    background-image: url('/visualisation/images/Absinthe.svg');
     left: 3vw;
 }
 
 .Aperol {
-    background-image: url('images/Aperol.svg');
+    background-image: url('/visualisation/images/Aperol.svg');
     left: 8vw;
 }
 
 .Blue-Curasao {
-    background-image: url('images/BlueCurasao.svg');
+    background-image: url('/visualisation/images/BlueCurasao.svg');
     left: 13vw;
 }
 
 .Bombay-Sapphire {
-    background-image: url('images/BombaySapphire.svg');
+    background-image: url('/visualisation/images/BombaySapphire.svg');
     left: 18vw;
 }
 
 .Campari {
-    background-image: url('images/Campari.svg');
+    background-image: url('/visualisation/images/Campari.svg');
     left: 23vw;
 }
 
@@ -316,22 +316,22 @@ water-glass {
 }
 
 .cherries {
-    background-image: url('images/Cherry.svg');
+    background-image: url('/visualisation/images/Cherry.svg');
     left: 3.5vw;
 }
 
 .limes {
-    background-image: url('images/Lime.svg');
+    background-image: url('/visualisation/images/Lime.svg');
     left: 8.5vw;
 }
 
 .olives {
-    background-image: url('images/Olives.svg');
+    background-image: url('/visualisation/images/Olives.svg');
     left: 13.5vw;
 }
 
 .strawberries {
-    background-image: url('images/Strawberries.svg');
+    background-image: url('/visualisation/images/Strawberries.svg');
     left: 18.5vw;
 }
 
@@ -351,7 +351,7 @@ water-glass {
 }
 
 .water-glass {
-    background-image: url('images/WaterGlass.svg');
+    background-image: url('/visualisation/images/WaterGlass.svg');
     right: 0.5vw;
     height: 5vw;
     width: 4vw;
@@ -365,22 +365,22 @@ water-glass {
 }
 
 .short-glass {
-    background-image: url('images/ShortGlass.svg');
+    background-image: url('/visualisation/images/ShortGlass.svg');
     right: 8.5vw;
 }
 
 .tall-glass {
-    background-image: url('images/TallGlass.svg');
+    background-image: url('/visualisation/images/TallGlass.svg');
     right: 4vw;
 }
 
 .round-glass {
-    background-image: url('images/RoundGlass.svg');
+    background-image: url('/visualisation/images/RoundGlass.svg');
     right: -0.5vw;
 }
 
 .second-cupboard {
-    background-image: url('images/Cupboard2.svg');
+    background-image: url('/visualisation/images/Cupboard2.svg');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -407,7 +407,7 @@ water-glass {
 .logo-wrapper {
     height: 60%;
     width: 100%;
-    background-image: url("images/NotBadBar.png");
+    background-image: url("/visualisation/images/NotBadBar.png");
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: center;
