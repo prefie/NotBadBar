@@ -1,7 +1,7 @@
 import {changeColor} from './js/functions.js';
-import {addDragAndDropEvent} from './js/dragAndDrop.js';
-import {requestL, requestOrder,requestGlass, firstRequest} from './js/requests.js';
-import {checkGlassNearImage} from './js/glassFunctions.js';
+import {addDragAndDropEvent, addDragAndDropEventForCocktailsInProgress} from './js/dragAndDrop.js';
+import {requestL, requestOrder, requestGlass, firstRequest} from './js/requests.js';
+import {tryGetCocktailPlace} from './js/glassFunctions.js';
 import {colors} from './js/config.js';
 
 function moveProgressBar(choosePlace, milliseconds) {
@@ -64,9 +64,9 @@ function tryPutGlass(glass, glassCopy, classGlass) {
         glassCopy.parentNode.removeChild(glassCopy);
     }
 
-    const {isNearImage, place} = checkGlassNearImage(glass, glassCopy);
+    const {inPlace, place} = tryGetCocktailPlace(glass, glassCopy);
 
-    if (!isNearImage || places[place].layers.length !== 0) {
+    if (!inPlace || places[place].layers.length !== 0) {
         return;
     }
 
@@ -78,6 +78,7 @@ function tryPutGlass(glass, glassCopy, classGlass) {
     }).catch((data) => console.log(data));
     document.getElementsByClassName(place)[0].prepend(places[place].chooseGlass);
     //glassesAtBarHandler(place);
+    update();
     return place;
 }
 
@@ -113,11 +114,11 @@ function tryPourLiquid(bottle, bottleCopy) {
             const gRight = glRect.right;
             const gTop = glRect.top;
             const gBottom = glRect.bottom;
-            const gWight = gRight - gLeft;
+            const gWidth = gRight - gLeft;
             const gHeight = gBottom - gTop;
 
-            return !(bRight > gRight + gWight
-                || bLeft < gLeft - gWight
+            return !(bRight > gRight + gWidth
+                || bLeft < gLeft - gWidth
                 || bTop < gTop - gHeight
                 || bBottom > gBottom + gHeight);
         }
@@ -200,7 +201,7 @@ let interval = setInterval(() => {
 }, 1000);
 
 let trash = document.querySelector(".trash");
-trash.addEventListener('click', deleteGlass);
+// trash.addEventListener('click', deleteGlass);
 
 function deleteGlass(place) {
     let gl = document.querySelector('.' + place);
@@ -237,6 +238,47 @@ function deletePatternGlass(place) {
     while (gl.firstChild) {
         gl.removeChild(gl.lastChild);
     }
+}
+
+const cocktailsInProgress = document.querySelector('.cocktails-in-progress').children;
+function update() {
+    for (let cocktail of cocktailsInProgress) {
+        if (cocktail.children[0]) {
+            addDragAndDropEventForCocktailsInProgress(cocktail, true, tryDeleteGlass, [cocktail.className]);
+        }
+    }
+}
+
+function tryDeleteGlass(glass, glassCopy, placeName) {
+
+    const glassLeft = parseInt(glassCopy.style.left);
+    const glassTop = parseInt(glassCopy.style.top);
+
+    if (glassCopy.parentNode) {
+        glassCopy.parentNode.removeChild(glassCopy);
+    }
+    const a = glass.getBoundingClientRect();
+    const glassWidth = a.width;
+    const glassHeight = a.height;
+
+    const glassRight = glassLeft + glassWidth;
+    const glassBottom = glassTop + glassHeight;
+
+    const trashRect = trash.getBoundingClientRect();
+    const trashLeft = trashRect.left;
+    const trashRight = trashRect.right;
+    const trashTop = trashRect.top;
+    const trashBottom = trashRect.bottom;
+
+    if (trashRight > glassRight + glassWidth
+        || trashLeft < glassLeft - glassWidth
+        || trashTop < glassTop - glassHeight
+        || trashBottom > glassBottom + glassHeight) {
+        glass.style.visibility = 'visible';
+        return;
+    }
+
+    deleteGlass(placeName);
 }
 
 function changeMoney(m) {

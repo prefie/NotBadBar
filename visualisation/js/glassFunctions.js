@@ -1,25 +1,33 @@
-// Проверка, что стакан находится в пределах картинки готового заказа (только по горизонтали)
-export function checkGlassNearImage(glass, glassCopy) {
-    let isNearImage = false;
+// Проверка, что стакан находится в пределах какого-то из четырех мест и получение нужного места
+export function tryGetCocktailPlace(glass, glassCopy) {
+    let inPlace = false;
     let place = null;
-    const resultCocktails = document.querySelectorAll('.order')
-    for (let cocktail of resultCocktails) {
-
-        const classList = cocktail.classList;
-        console.log(classList[classList.length - 1]);
+    const cocktailInProgress = document.querySelector('.cocktails-in-progress').children;
+    for (let cocktail of cocktailInProgress) {
 
         const glassWidth = glass.offsetWidth;
-        const xLeft = cocktail.getBoundingClientRect().left - glassWidth / 2;
-        const xRight = cocktail.getBoundingClientRect().right + glassWidth / 2;
+        const glassHeight = glass.offsetHeight;
+        const cocktailRect = cocktail.getBoundingClientRect();
+        const cocktailLeft = cocktailRect.left;
+        const cocktailRight = cocktailRect.right;
+        const cocktailTop = cocktailRect.top;
+        const cocktailBottom = cocktailRect.bottom;
 
-        const gLeft = parseInt(glassCopy.style.left);
-        const gRight = gLeft + glassWidth;
+        const glassLeft = parseInt(glassCopy.style.left);
+        const glassRight = glassLeft + glassWidth;
+        const glassTop = parseInt(glassCopy.style.top);
+        const glassBottom = glassTop + glassHeight;
 
-        if (xLeft < gLeft && xRight > gRight) {
-            place = `${classList[classList.length - 1]}-glass`;
-            isNearImage = true;
+        if (cocktailRight > glassRight + glassWidth
+            || cocktailLeft < glassLeft - glassWidth
+            || cocktailTop < glassTop - glassHeight
+            || cocktailBottom > glassBottom + glassHeight) {
+            continue;
         }
+
+        place = cocktail.className;
+        inPlace = true;
     }
 
-    return {isNearImage, place};
+    return {inPlace, place};
 }
