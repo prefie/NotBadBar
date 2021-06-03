@@ -17,6 +17,8 @@ function moveProgressBar(choosePlace, milliseconds) {
                 clearInterval(id);
                 deleteGlass(choosePlace);
                 places[choosePlace].id = data['id'];
+                places[choosePlace].pattern = data['pattern'];
+                drawPatternGlass(choosePlace);
                 places[choosePlace].progressBar = moveProgressBar(choosePlace, data.time);
             });
         } else {
@@ -32,6 +34,7 @@ const places = {};
 for (const gl of ['first-glass', 'second-glass', 'third-glass', 'fourth-glass']) {
     places[gl] = {
         'id': null,
+        'pattern': null,
         'chooseGlass': null,
         'layers': [],
         'progressBar': null
@@ -43,6 +46,8 @@ let levelTarget = null;
 firstRequest().then(data => {
     places['first-glass'].id = data['id'];
     places['first-glass'].progressBar = moveProgressBar('first-glass', data['timeout']);
+    places['first-glass'].pattern = data['pattern'];
+    drawPatternGlass('first-glass');
     levelTarget = data['target'];
 });
 
@@ -162,9 +167,11 @@ function drawLayer(bottleName, choosePlace) {  // TODO: change name
             setTimeout(deleteGlass, 1000, choosePlace);
 
             places[choosePlace].id = data['newId'];
+            places[choosePlace].pattern = data['pattern'];
             setTimeout(function() {
                 clearInterval(places[choosePlace].progressBar);
                 places[choosePlace].progressBar = moveProgressBar(choosePlace, data['timeout']);
+                drawPatternGlass(choosePlace);
             }, 1000);
         } else if (data['status'] === 'delete') {
             setTimeout(deleteGlass, 1000, choosePlace);
@@ -197,9 +204,39 @@ trash.addEventListener('click', deleteGlass);
 
 function deleteGlass(place) {
     let gl = document.querySelector('.' + place);
-    if (gl !== null && gl.children.length !== 0)
-        gl.removeChild(gl.children[0]);
+    while (gl.firstChild) {
+        gl.removeChild(gl.lastChild);
+    }
     places[place].layers = [];
+}
+
+function drawPatternGlass(place){
+    deletePatternGlass(place);
+    let pattern = places[place].pattern;
+    let glass = document.createElement(pattern.name);
+    document.querySelector('.' + place.split('-')[0] + '-order').append(glass);
+    glass.querySelector('#first-layer').setAttribute('class', pattern.liquids[0].color);
+    if (pattern.liquids.length>1)
+        glass.querySelector('#second-layer').setAttribute('class', pattern.liquids[1].color);
+    if (pattern.liquids.length>2)
+        glass.querySelector('#third-layer').setAttribute('class', pattern.liquids[2].color);
+    //glass.querySelector('#upper').setAttribute('class', '*второй цвет*');
+    //glass.querySelector('#lower').setAttribute('class', '*второй цвет*');
+
+    if (pattern.topping !== null) {
+        let topping = glass.querySelectorAll(`.${pattern.topping.name}`);
+
+        for (let t of topping)
+            t.setAttribute('class', 'visible-topping');
+    }
+    glass.style.visibility = 'visible';
+}
+
+function deletePatternGlass(place) {
+    let gl = document.querySelector('.' + place.split('-')[0] + '-order');
+    while (gl.firstChild) {
+        gl.removeChild(gl.lastChild);
+    }
 }
 
 function changeMoney(m) {

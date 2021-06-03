@@ -12,6 +12,8 @@ const port = process.env.PORT ?? 3000;
 const app = express();
 const rootDir = process.cwd();
 
+const users = {}
+
 app.set('view engine', 'hbs');
 
 app.use(express.static('logic'))
@@ -34,8 +36,14 @@ app.get('/', (_, res) => {
     res.redirect('/main');
 });
 
+app.get('/levels', (_, res) => {
+    res.render('levels');
+});
+
 app.get('/game', (req, res) => {
     bar = generateBar(10, 3, 14);
+    //document.cookie = `user=${users.length}`;
+    //users[req.cookies[0]] = bar;
     bar.start();
     const time = bar.time / 1000;
     const min = Math.floor(time / 60);
@@ -44,15 +52,20 @@ app.get('/game', (req, res) => {
 });
 
 app.post('/game/firstOrder', (req, res) => {
-    bar.orders.push(new Order(228, new Glass('water-glass', 3, [new Liquid('Campari', 7)]), 10000, 21))
+    //bar.orders.push(new Order(228, new Glass('water-glass', 3, [new Liquid('Campari', 7)]), 10000, 21))
+    //alert(document.cookie);
+    //const bar = users[0];
     const order = bar.orders.pop();
     orders[order.id] = order;
 
     bar.tryGetNextOrder(orders[order.id]);
+    console.log('___');
     console.log(order);
+    console.log('___');
     res.send(JSON.stringify({
         'id': order.id,
         'timeout': order.time,
+        'pattern': order.patternGlass,
         'target': bar.levelTarget
     }))
 });
@@ -78,7 +91,11 @@ app.post('/game/getOrder', (req, res) => {
         orders[order.id] = order;
 
         bar.tryGetNextOrder(orders[order.id]);
-        res.send(JSON.stringify(orders[order.id]));
+        res.send(JSON.stringify({
+            'id': order.id,
+            'time': order.time,
+            'pattern': order.patternGlass
+        }));
     } else {
         res.send(); // TODO: тут конец уровня
     }
@@ -97,16 +114,18 @@ app.post('/game/chooseLiquids/:liq/:ord', (req, res) => {
         'newId': null,
         'money': bar.money,
         'status': 'wait',
-        'timeout': 'none'
+        'timeout': 'none',
+        'pattern': null
     }
 
     if (status && bar.orders.length > 0) {
         let order = bar.orders.pop();
         orders[order.id] = order;
 
-        answer['newId'] = orders[order.id].id;
+        answer['newId'] = order.id;
         answer['status'] = 'next';
-        answer['timeout'] = orders[order.id].time;
+        answer['timeout'] = order.time;
+        answer['pattern'] = order.patternGlass
         res.send(JSON.stringify(answer));
         bar.tryGetNextOrder(orders[order.id]);
     } else if (status) {

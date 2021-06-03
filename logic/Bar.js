@@ -75,12 +75,12 @@ export function generateOrder(maxLayers, topping, id) {
         return new Order(
             id,
             new Glass(glass, layers.length, layers, t),
-            layers.length * 3000 + 2000, sum*2);
+            layers.length * 5500 + 3000, sum*2);
     }
     return new Order(
         id,
         new Glass(glass, layers.length, layers),
-        layers.length * 3000, sum*2);
+        layers.length * 5500, sum*2);
 }
 
 export function generateBar(ordersCount, maxLayers, levelTarget, ) {
@@ -103,11 +103,11 @@ export const glasses = [
 ];
 
 export const liquids = [
-    new Liquid("Absinthe", 4),
-    new Liquid("Aperol", 5),
-    new Liquid('Blue-Curasao', 7),
-    new Liquid('Bombay-Sapphire', 9),
-    new Liquid("Campari", 7)
+    new Liquid("Absinthe", 4, 'limegreen'),
+    new Liquid("Aperol", 5, 'orange'),
+    new Liquid('Blue-Curasao', 7, 'blue'),
+    new Liquid('Bombay-Sapphire', 9, 'lightskyblue'),
+    new Liquid("Campari", 7, 'red')
 ];
 
 export const toppings = [
