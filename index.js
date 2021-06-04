@@ -34,6 +34,10 @@ app.get('/', (_, res) => {
     res.redirect('/main');
 });
 
+app.get('/levels', (_, res) => {
+    res.render('levels');
+});
+
 app.get('/game', (req, res) => {
     bar = generateBar(10, 3, 14);
     bar.start();
