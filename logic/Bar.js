@@ -75,12 +75,12 @@ export function generateOrder(maxLayers, topping, id) {
         return new Order(
             id,
             new Glass(glass, layers.length, layers, t),
-            layers.length * 5500 + 3000, sum*2);
+            layers.length * 5000 + 3000, sum*2);
     }
     return new Order(
         id,
         new Glass(glass, layers.length, layers),
-        layers.length * 5500, sum*2);
+        layers.length * 5000, sum*2);
 }
 
 export function generateBar(ordersCount, maxLayers, levelTarget, ) {
