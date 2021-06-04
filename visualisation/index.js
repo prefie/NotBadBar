@@ -1,8 +1,10 @@
 import {changeColor} from './js/functions.js';
 import {addDragAndDropEvent, addDragAndDropEventForCocktailsInProgress} from './js/dragAndDrop.js';
 import {requestL, requestOrder, requestGlass, firstRequest} from './js/requests.js';
-import {tryGetCocktailPlace, deleteExtraGlasses} from './js/glassFunctions.js';
-import {colors} from './js/config.js';
+import {tryGetCocktailPlace,
+    deleteExtraGlasses,
+    checkObjNearGlass} from './js/glassFunctions.js';
+import {colors, toppingsDict} from './js/config.js';
 
 function moveProgressBar(choosePlace, milliseconds) {
     let progress = choosePlace.split('-')[0] + '-progress-bar';
@@ -38,6 +40,7 @@ for (const gl of ['first-glass', 'second-glass', 'third-glass', 'fourth-glass'])
         'pattern': null,
         'chooseGlass': null,
         'layers': [],
+        'topping': null,
         'progressBar': null
     };
 }
@@ -52,8 +55,6 @@ firstRequest().then(data => {
     levelTarget = data['target'];
 });
 
-let chooseBottle = null;
-
 let glasses = document.querySelectorAll('.glass');
 for (let glass of glasses) {
     let classGlass = glass.classList[glass.classList.length - 1];
@@ -66,7 +67,6 @@ function tryPutGlass(glass, glassCopy, classGlass) {
     }
 
     const {inPlace, place} = tryGetCocktailPlace(glass, glassCopy);
-
     if (!inPlace || places[place].layers.length !== 0) {
         return;
     }
@@ -79,7 +79,7 @@ function tryPutGlass(glass, glassCopy, classGlass) {
     }).catch((data) => console.log(data));
     document.getElementsByClassName(place)[0].prepend(places[place].chooseGlass);
     //glassesAtBarHandler(place);
-    update();
+    updateCocktailsInProgress();
     return place;
 }
 
@@ -101,38 +101,21 @@ function tryPourLiquid(bottle, bottleCopy) {
 
     bottle.style.visibility = 'visible';
 
-    const gl = document.querySelector('.cocktails-in-progress');
+    const cocktailsInProgress = document.querySelector('.cocktails-in-progress');
 
-    for (const child of gl.children) {
-        if (child.children.length < 1)
+    for (const cocktail of cocktailsInProgress.children) {
+        if (cocktail.children.length < 1)
             continue;
 
-        let b = child.children[0].children[0];
-
-        function check(b) {
-            const glRect = b.getBoundingClientRect();
-            const gLeft = glRect.left;
-            const gRight = glRect.right;
-            const gTop = glRect.top;
-            const gBottom = glRect.bottom;
-            const gWidth = gRight - gLeft;
-            const gHeight = gBottom - gTop;
-
-            return !(bRight > gRight + gWidth
-                || bLeft < gLeft - gWidth
-                || bTop < gTop - gHeight
-                || bBottom > gBottom + gHeight);
-        }
-
-        if (check(b)) {
-            chooseBottle = bottle.classList[bottle.classList.length - 1];
-            glassesAtBarHandler(child.className.toLowerCase());
+        if (checkObjNearGlass(cocktail, bLeft, bRight, bTop, bBottom)) {
+            let chooseBottle = bottle.classList[bottle.classList.length - 1];
+            glassesAtBarHandler(cocktail.className.toLowerCase(), chooseBottle);
             return;
         }
     }
 }
 
-function glassesAtBarHandler(chooseGlass) {
+function glassesAtBarHandler(chooseGlass, chooseBottle) {
     if (chooseBottle === null || chooseGlass === null) {
         return;
     }
@@ -156,8 +139,6 @@ function glassesAtBarHandler(chooseGlass) {
         thirdLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
         drawLayer(chooseBottle, chooseGlass);
     }
-
-    chooseBottle = null;
 }
 
 function drawLayer(bottleName, choosePlace) {  // TODO: change name
@@ -201,16 +182,6 @@ let interval = setInterval(() => {
     timer.textContent = `${min}:${(sec + '').padStart(2, '0')}`;
 }, 1000);
 
-let trash = document.querySelector(".trash");
-
-function deleteGlass(place) {
-    let gl = document.querySelector('.' + place);
-    while (gl.firstChild) {
-        gl.removeChild(gl.lastChild);
-    }
-    places[place].layers = [];
-}
-
 function drawPatternGlass(place) {
     deletePatternGlass(place);
     let pattern = places[place].pattern;
@@ -240,8 +211,16 @@ function deletePatternGlass(place) {
     }
 }
 
+function deleteGlass(place) {
+    let glass = document.querySelector('.' + place);
+    while (glass.firstChild) {
+        glass.removeChild(glass.lastChild);
+    }
+    places[place].layers = [];
+}
+
 const cocktailsInProgress = document.querySelector('.cocktails-in-progress').children;
-function update() { // TODO: rename
+function updateCocktailsInProgress() {
     for (let cocktail of cocktailsInProgress) {
         if (cocktail.children[0]) {
             addDragAndDropEventForCocktailsInProgress(cocktail, true, tryDeleteGlass, [cocktail.className]);
@@ -249,6 +228,7 @@ function update() { // TODO: rename
     }
 }
 
+let trash = document.querySelector('.trash');
 function tryDeleteGlass(glass, glassCopy, placeName) {
 
     const glassLeft = parseInt(glass.style.left);
@@ -267,23 +247,16 @@ function tryDeleteGlass(glass, glassCopy, placeName) {
     const trashTop = trashRect.top;
     const trashBottom = trashRect.bottom;
 
+    deleteExtraGlasses();
+
     if (trashRight > glassRight + glassWidth
         || trashLeft < glassLeft - glassWidth
         || trashTop < glassTop - glassHeight
         || trashBottom > glassBottom + glassHeight) {
-
-        let oldLayers = places[placeName].layers.slice();
-        places[placeName].layers = []
-        for (const layer of oldLayers) {
-            chooseBottle = layer;
-            glassesAtBarHandler(placeName);
-        }
-        glassCopy.style.visibility = 'visible';
-        deleteExtraGlasses();
+        glassCopy.style.opacity = '100';
         return;
     }
 
-    deleteExtraGlasses();
     deleteGlass(placeName);
 }
 
@@ -301,5 +274,57 @@ function changeMoney(m) {
 
     if (m >= levelTarget * 2) {
         document.querySelector('.third-star').style.color = '#FFC700';
+    }
+}
+
+
+const toppings = document.querySelectorAll('.decoration');
+for (let topping of toppings) {
+    addDragAndDropEvent(topping, false, tryPutTopping);
+}
+
+function tryPutTopping(topping, toppingCopy) {
+    const bLeft = parseInt(toppingCopy.style.left);
+    const bRight = bLeft + topping.offsetWidth;
+
+    const bTop = parseInt(toppingCopy.style.top);
+    const bBottom = bTop + topping.offsetHeight;
+
+    if (toppingCopy.parentNode) {
+        toppingCopy.parentNode.removeChild(toppingCopy);
+    }
+
+    const cocktailsInProgress = document.querySelector('.cocktails-in-progress');
+
+    for (const cocktail of cocktailsInProgress.children) {
+        if (cocktail.children.length < 1)
+            continue;
+
+        if (checkObjNearGlass(cocktail, bLeft, bRight, bTop, bBottom)) {
+            let chooseTopping = topping.classList[topping.classList.length - 1];
+            toppingsHandler(cocktail.className.toLowerCase(), chooseTopping);
+            return;
+        }
+    }
+}
+
+function toppingsHandler(chooseGlass, chooseTopping) {
+    let glass = document.querySelector(`.${chooseGlass}`).children[0];
+    let topping = glass.querySelectorAll(`.${toppingsDict[chooseTopping]}`);
+    for (let t of topping){
+        t.setAttribute('class', 'visible-topping');
+    }
+    places[chooseGlass].topping = chooseTopping;
+    // TODO: requestTopping -- что-то на подобие requestL
+}
+
+export function addLayersToGlassClone(placeName) {
+    let oldLayers = places[placeName].layers.slice();
+    places[placeName].layers = []
+    for (const layer of oldLayers) {
+        glassesAtBarHandler(placeName, layer);
+    }
+    if (places[placeName].topping){
+        toppingsHandler(placeName, places[placeName].topping);
     }
 }

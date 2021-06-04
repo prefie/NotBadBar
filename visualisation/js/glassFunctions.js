@@ -47,3 +47,20 @@ export function deleteExtraGlasses() {
         }
     }
 }
+
+// проверка, что бутылка или топпинг находится около бокала
+export function checkObjNearGlass(glass, objLeft, objRight, objTop, objBottom) {
+    const _glass = glass.children[0].children[0];
+    const glRect = _glass.getBoundingClientRect();
+    const gLeft = glRect.left;
+    const gRight = glRect.right;
+    const gTop = glRect.top;
+    const gBottom = glRect.bottom;
+    const gWidth = gRight - gLeft;
+    const gHeight = gBottom - gTop;
+
+    return !(objRight > gRight + gWidth
+        || objLeft < gLeft - gWidth
+        || objTop < gTop - gHeight
+        || objBottom > gBottom + gHeight);
+}
