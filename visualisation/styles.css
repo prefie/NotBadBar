@@ -10,6 +10,7 @@ html,
 body {
     width: 100%;
     height: 100vh;
+    overflow: hidden;
 }
 
 div {
@@ -430,6 +431,108 @@ water-glass {
 
 .visible-topping {
     visibility: visible;
+}
+
+.modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 5px solid white;
+    background-color: black;
+    border-radius: 0.5vw;
+    color: white;
+    font-size: 4vw;
+    font-family: sans-serif;
+    padding: 2vw;
+    text-align: center;
+    z-index: 3;
+    visibility: hidden;
+}
+
+.progress-information {
+    display: flex;
+}
+
+.time-money-wrapper {
+    width: 45%;
+}
+
+.progress-money,
+.progress-time {
+    display: flex;
+    padding-left: 6vw;
+}
+
+.progress-money {
+    padding-top: 2vw;
+}
+
+.progress-time {
+    padding-bottom: 2vw;
+}
+
+.earned-money,
+.total-time {
+    font-size: 3vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 1vw;
+    font-weight: bold;
+}
+
+.earned-money-image,
+.total-time-image {
+    display: block;
+    width: 30%;
+    border: none;
+}
+
+.progress-stars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -2vw;
+    border: none;
+}
+
+.progress-star {
+    font-size: 8vw;
+}
+
+.back-to-levels-button,
+.play-again-button {
+    padding: 1vw 3vw;
+    font-size: 2.5vw;
+    background-color: #351330;
+    color: white;
+    border: 3px solid white;
+    border-radius: 0.4vw;
+    font-weight: bold;
+}
+
+.back-to-levels-button {
+    margin-bottom: 1vw;
+}
+
+.play-again-button {
+    margin-top: 5vw;
+    margin-bottom: 2vw;
+    padding: 1vw 4.75vw;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 2;
+    visibility: hidden;
 }
 
 /* MAIN MENU */

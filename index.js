@@ -12,7 +12,7 @@ const port = process.env.PORT ?? 3000;
 const app = express();
 const rootDir = process.cwd();
 
-const users = {}
+const users = {};
 
 app.set('view engine', 'hbs');
 
@@ -107,12 +107,12 @@ app.post('/game/getOrder', (req, res) => {
 
 app.post('/game/chooseLiquids/:liq/:ord', (req, res) => {
     orders[req.params['ord']].addIngredientInGlass(new Liquid(req.params['liq'], prices[req.params['liq']]));
-    console.log('____')
+    console.log('____');
     console.log(orders[req.params['ord']].glass);
     console.log(orders[req.params['ord']].patternGlass);
     const status = bar.tryPassOrder(orders[req.params['ord']]);
-    console.log(status)
-    console.log('____')
+    console.log(status);
+    console.log('____');
 
     const answer = {
         'newId': null,
@@ -120,7 +120,7 @@ app.post('/game/chooseLiquids/:liq/:ord', (req, res) => {
         'status': 'wait',
         'timeout': 'none',
         'pattern': null
-    }
+    };
 
     if (status && bar.orders.length > 0) {
         let order = bar.orders.pop();
