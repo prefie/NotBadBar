@@ -501,28 +501,30 @@ water-glass {
 }
 
 .level-wrapper {
-    width: 25%;
+    width: 30%;
     margin: 1vw;
 }
 
 .level {
-    margin-bottom: 1vw;
+    padding-top: 1vw;
+    margin-bottom: 2vw;
     color: white;
     text-align: center;
-    font-size: 2.5vw;
+    font-size: 3.5vw;
     font-family: sans-serif;
-    border: 2px solid white;
+    border: 3px solid white;
     background-color: #351330;
 }
 
 .start-level-button {
     width: 100%;
     padding: 1vw;
-    font-size: 2vw;
+    font-size: 2.5vw;
     background-color: #351330;
     color: white;
-    border: 2px solid white;
+    border: 3px solid white;
     border-radius: 0.4vw;
+    font-weight: bold;
 }
 
 .level-time,
@@ -534,8 +536,14 @@ water-glass {
 .level-money,
 .level-time {
     display: flex;
-    width: 70%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
     border: none;
+}
+
+.level-time {
+    margin-top: 2vw;
 }
 
 .time-image,
@@ -552,4 +560,10 @@ water-glass {
     justify-content: center;
     align-items: center;
     border: none;
+}
+
+.level-stars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
