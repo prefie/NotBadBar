@@ -309,6 +309,9 @@ function tryPutTopping(topping, toppingCopy) {
 }
 
 function toppingsHandler(chooseGlass, chooseTopping) {
+    if (places[chooseGlass].topping){
+        return;
+    }
     let glass = document.querySelector(`.${chooseGlass}`).children[0];
     let topping = glass.querySelectorAll(`.${toppingsDict[chooseTopping]}`);
     for (let t of topping){
