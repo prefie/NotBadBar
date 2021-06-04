@@ -5,3 +5,10 @@ export const colors = {
     'Bombay-Sapphire': 'lightskyblue',
     'Campari': 'red'
 };
+
+export const toppingsDict = {
+    'cherries': 'cherry',
+    'limes': 'lime',
+    'olives': 'olive',
+    'strawberries': 'strawberry'
+};

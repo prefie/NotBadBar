@@ -1,10 +1,13 @@
+import {addLayersToGlassClone} from '../index.js';
+
+
 export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params=[]){
-    let res;
     obj.addEventListener('mousedown', (event) => {
         const objCopy = obj.cloneNode(true);
         if (hidden) {
             obj.style.visibility = 'hidden';
         }
+        objCopy.style.opacity = '100';
 
         let X = obj.getBoundingClientRect().left;
         let Y = obj.getBoundingClientRect().top;
@@ -34,8 +37,59 @@ export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params=[]){
 
         objCopy.addEventListener('mouseup', () => {
             document.removeEventListener('mousemove', onMouseMove);
-            res = actionOnMouseUp(obj, objCopy, ...params);
+            actionOnMouseUp(obj, objCopy, ...params);
         });
     });
-    return res;
+}
+
+export function addDragAndDropEventForCocktailsInProgress(cocktail, hidden, actionOnMouseUp, params=[]){
+    cocktail.addEventListener('mousedown', (event) => {
+
+        let svg = cocktail.children[0].children[0];
+        let rect = cocktail.getBoundingClientRect();
+
+        // создание такого же бокала вместо прошлого
+        let glassCopy = document.createElement(cocktail.children[0].tagName);
+        document.getElementsByClassName(cocktail.className)[0].prepend(glassCopy);
+        glassCopy.style.opacity = '0';
+        addLayersToGlassClone(cocktail.className);
+
+        svg.style.top = rect.top + 'px';
+        svg.style.left = rect.left + 'px';
+        svg.style.width = rect.width + 'px';
+        svg.style.height = rect.height + 'px';
+
+        if (cocktail.children[0].tagName.toLowerCase() === 'water-glass') { // привет, костыль))))
+            svg.style.width = parseInt(svg.style.width) * 0.8 + 'px';
+            svg.style.height = parseInt(svg.style.height) * 0.8 + 'px';
+        }
+
+        let X = svg.getBoundingClientRect().left;
+        let Y = svg.getBoundingClientRect().top;
+
+        let shiftX = event.clientX - X;
+        let shiftY = event.clientY - Y;
+
+        svg.style.position = 'absolute';
+        svg.style.zIndex = '1000';
+        document.body.append(svg);
+
+        moveAt(event.pageX, event.pageY);
+
+        function moveAt(pageX, pageY) {
+            svg.style.left = pageX - shiftX + 'px';
+            svg.style.top = pageY - shiftY + 'px';
+        }
+
+        function onMouseMove(event) {
+            moveAt(event.pageX, event.pageY);
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+
+        svg.addEventListener('mouseup', () => {
+            document.removeEventListener('mousemove', onMouseMove);
+            actionOnMouseUp(svg, glassCopy, ...params);
+        });
+    });
 }

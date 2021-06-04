@@ -1,25 +1,66 @@
-// Проверка, что стакан находится в пределах картинки готового заказа (только по горизонтали)
-export function checkGlassNearImage(glass, glassCopy) {
-    let isNearImage = false;
-    let place = null;
-    const resultCocktails = document.querySelectorAll('.order')
-    for (let cocktail of resultCocktails) {
+// Проверка, что стакан находится в пределах какого-то из четырех мест и получение нужного места
+export function tryGetCocktailPlace(glass, glassCopy) {
+    let inPlace = false;
+    let resultPlace = null;
+    const places = document.querySelector('.cocktails-in-progress').children;
+    for (let place of places) {
 
-        const classList = cocktail.classList;
-        console.log(classList[classList.length - 1]);
+        let glassWidth = glass.clientWidth;
+        let glassHeight = glass.clientHeight;
 
-        const glassWidth = glass.offsetWidth;
-        const xLeft = cocktail.getBoundingClientRect().left - glassWidth / 2;
-        const xRight = cocktail.getBoundingClientRect().right + glassWidth / 2;
-
-        const gLeft = parseInt(glassCopy.style.left);
-        const gRight = gLeft + glassWidth;
-
-        if (xLeft < gLeft && xRight > gRight) {
-            place = `${classList[classList.length - 1]}-glass`;
-            isNearImage = true;
+        if (glass.className === 'glass water-glass') {
+            glassWidth *= 3/2;
+            glassHeight *= 3/2;
         }
+
+        const placeRect = place.getBoundingClientRect();
+        const placeLeft = placeRect.left;
+        const placeRight = placeRect.right;
+        const placeTop = placeRect.top;
+        const placeBottom = placeRect.bottom;
+
+        const glassLeft = parseInt(glassCopy.style.left);
+        const glassRight = glassLeft + glassWidth;
+        const glassTop = parseInt(glassCopy.style.top);
+        const glassBottom = glassTop + glassHeight;
+
+        if (placeRight > glassRight + glassWidth
+            || placeLeft < glassLeft - glassWidth
+            || placeTop < glassTop - glassHeight
+            || placeBottom > glassBottom + 2 * glassHeight) {
+            continue;
+        }
+
+        resultPlace = place.className;
+        inPlace = true;
     }
 
-    return {isNearImage, place};
+    return {inPlace, place: resultPlace};
+}
+
+// удаление из html стаканов, которые создаются при перетаскивании
+export function deleteExtraGlasses() {
+    const glasses = document.querySelectorAll('#glass');
+    for (let gl of glasses) {
+        if (gl.parentNode.nodeName.toLowerCase() === 'body') {
+            gl.parentNode.removeChild(gl);
+        }
+    }
+}
+
+// проверка, что бутылка или топпинг находится около бокала
+export function checkObjNearGlass(glass, objLeft, objRight, objTop, objBottom) {
+    const _glass = glass.children[0].children[0];
+    const glRect = _glass.getBoundingClientRect();
+    const gLeft = glRect.left;
+    const gRight = glRect.right;
+    const gTop = glRect.top;
+    const gBottom = glRect.bottom;
+    const gWidth = gRight - gLeft;
+    const gHeight = gBottom - gTop;
+
+    return !(objRight > gRight + gWidth
+        || objLeft < gLeft - gWidth
+        || objTop < gTop - gHeight
+        || objBottom > gBottom + gHeight);
 }
