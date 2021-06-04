@@ -307,8 +307,8 @@ water-glass {
 .decoration {
     position: absolute;
     bottom: 0.5vw;
-    width: 5vw;
-    height: 5vw;
+    width: 3.5vw;
+    height: 3.5vw;
     border: none;
     background-size: contain;
     background-repeat: no-repeat;
@@ -323,17 +323,17 @@ water-glass {
 
 .limes {
     background-image: url('/visualisation/images/Lime.svg');
-    left: 8.5vw;
+    left: 9vw;
 }
 
 .olives {
     background-image: url('/visualisation/images/Olives.svg');
-    left: 13.5vw;
+    left: 14.5vw;
 }
 
 .strawberries {
     background-image: url('/visualisation/images/Strawberries.svg');
-    left: 19vw;
+    left: 20vw;
 }
 
 .cherry,
@@ -454,6 +454,7 @@ water-glass {
     margin: 0 auto;
     background-color: #351330;
     border: 2px solid white;
+    border-radius: 0.4vw;
     font-size: 3vw;
     color: white;
     position: relative;
