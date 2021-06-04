@@ -217,6 +217,7 @@ function deleteGlass(place) {
         glass.removeChild(glass.lastChild);
     }
     places[place].layers = [];
+    places[place].topping = null;
 }
 
 const cocktailsInProgress = document.querySelector('.cocktails-in-progress').children;
