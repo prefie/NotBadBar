@@ -313,11 +313,12 @@ water-glass {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: bottom;
+    opacity: 0;
 }
 
 .cherries {
     background-image: url('/visualisation/images/Cherry.svg');
-    left: 3.5vw;
+    left: 3vw;
 }
 
 .limes {
@@ -332,7 +333,7 @@ water-glass {
 
 .strawberries {
     background-image: url('/visualisation/images/Strawberries.svg');
-    left: 18.5vw;
+    left: 19vw;
 }
 
 .cherry,
@@ -402,7 +403,36 @@ water-glass {
 
 
 
-/*Если не понравится, откатим*/
+.limegreen {
+    fill: limegreen;
+    stop-color: limegreen;
+}
+
+.blue {
+    fill: blue;
+    stop-color: blue;
+}
+
+.lightskyblue {
+    fill: lightskyblue;
+    stop-color: lightskyblue;
+}
+
+.red {
+    fill: red;
+    stop-color: red;
+}
+
+.orange {
+    fill: orange;
+    stop-color: orange;
+}
+
+.visible-topping {
+    visibility: visible;
+}
+
+/* MAIN MENU */
 
 .logo-wrapper {
     height: 60%;
@@ -432,31 +462,93 @@ water-glass {
     transform: translateX(-50%);
 }
 
-.limegreen {
-    fill: limegreen;
-    stop-color: limegreen;
+/* LEVELS */
+
+.wrapper-for-levels-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-content: center;
+    background-color: black;
 }
 
-.blue {
-    fill: blue;
-    stop-color: blue;
+.back-button {
+    padding: 0.5vw 1.5vw;
+    position: absolute;
+    top: 1vw;
+    left: 1vw;
+    color: white;
+    background-color: #351330;
+    font-size: 4vw;
+    border: 1px solid white;
+    border-radius: 0.4vw;
+    font-weight: bold;
 }
 
-.lightskyblue {
-    fill: lightskyblue;
-    stop-color: lightskyblue;
+.levels-wrapper {
+    width: 80%;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
 
-.red {
-    fill: red;
-    stop-color: red;
+.level-wrapper {
+    width: 25%;
+    margin: 1vw;
 }
 
-.orange {
-    fill: orange;
-    stop-color: orange;
+.level {
+    margin-bottom: 1vw;
+    color: white;
+    text-align: center;
+    font-size: 2.5vw;
+    font-family: sans-serif;
+    border: 2px solid white;
+    background-color: #351330;
 }
 
-.visible-topping {
-    visibility: visible;
+.start-level-button {
+    width: 100%;
+    padding: 1vw;
+    font-size: 2vw;
+    background-color: #351330;
+    color: white;
+    border: 2px solid white;
+    border-radius: 0.4vw;
+}
+
+.level-time,
+.level-money,
+.level-stars {
+    border: none;
+}
+
+.level-money,
+.level-time {
+    display: flex;
+    width: 70%;
+    border: none;
+}
+
+.time-image,
+.money-image {
+    display: block;
+    width: 25%;
+    padding: 0.4vw;
+    border: none;
+}
+
+.money,
+.time {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
 }
