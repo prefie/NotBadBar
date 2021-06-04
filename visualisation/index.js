@@ -1,7 +1,7 @@
 import {changeColor} from './js/functions.js';
 import {addDragAndDropEvent, addDragAndDropEventForCocktailsInProgress} from './js/dragAndDrop.js';
 import {requestL, requestOrder, requestGlass, firstRequest} from './js/requests.js';
-import {tryGetCocktailPlace} from './js/glassFunctions.js';
+import {tryGetCocktailPlace, deleteExtraGlasses} from './js/glassFunctions.js';
 import {colors} from './js/config.js';
 
 function moveProgressBar(choosePlace, milliseconds) {
@@ -27,6 +27,7 @@ function moveProgressBar(choosePlace, milliseconds) {
             elem.style.height = height + '%';
         }
     }
+
     return id;
 }
 
@@ -108,7 +109,7 @@ function tryPourLiquid(bottle, bottleCopy) {
 
         let b = child.children[0].children[0];
 
-        function check (b) {
+        function check(b) {
             const glRect = b.getBoundingClientRect();
             const gLeft = glRect.left;
             const gRight = glRect.right;
@@ -131,7 +132,7 @@ function tryPourLiquid(bottle, bottleCopy) {
     }
 }
 
-function glassesAtBarHandler (chooseGlass) {
+function glassesAtBarHandler(chooseGlass) {
     if (chooseBottle === null || chooseGlass === null) {
         return;
     }
@@ -144,15 +145,15 @@ function glassesAtBarHandler (chooseGlass) {
     let lower = doc.querySelector('#lower');
 
     if (places[chooseGlass].layers.length === 0) {
-        firstLayer.setAttribute('class', colors[chooseBottle]);
+        firstLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
         drawLayer(chooseBottle, chooseGlass);
     } else if (places[chooseGlass].layers.length === 1) {
         // upper.setAttribute('class', colors[chooseBottle]); // TODO: сломались градиенты, надо чинить
-        secondLayer.setAttribute('class', colors[chooseBottle]);
+        secondLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
         drawLayer(chooseBottle, chooseGlass);
     } else if (places[chooseGlass].layers.length === 2) {
         // lower.setAttribute('class', places[chooseGlass].layers[1]);
-        thirdLayer.setAttribute('class', colors[chooseBottle]);
+        thirdLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
         drawLayer(chooseBottle, chooseGlass);
     }
 
@@ -160,7 +161,7 @@ function glassesAtBarHandler (chooseGlass) {
 }
 
 function drawLayer(bottleName, choosePlace) {  // TODO: change name
-    places[choosePlace].layers.push(colors[bottleName]);
+    places[choosePlace].layers.push(colors[bottleName] || bottleName);
     requestL(bottleName, places[choosePlace].id).then((data) => {
         console.log(data);
         changeMoney(data['money']);
@@ -169,7 +170,7 @@ function drawLayer(bottleName, choosePlace) {  // TODO: change name
 
             places[choosePlace].id = data['newId'];
             places[choosePlace].pattern = data['pattern'];
-            setTimeout(function() {
+            setTimeout(function () {
                 clearInterval(places[choosePlace].progressBar);
                 places[choosePlace].progressBar = moveProgressBar(choosePlace, data['timeout']);
                 drawPatternGlass(choosePlace);
@@ -197,11 +198,10 @@ let interval = setInterval(() => {
         sec--;
     }
 
-    timer.textContent = `${min}:${(sec+'').padStart(2,'0')}`;
+    timer.textContent = `${min}:${(sec + '').padStart(2, '0')}`;
 }, 1000);
 
 let trash = document.querySelector(".trash");
-// trash.addEventListener('click', deleteGlass);
 
 function deleteGlass(place) {
     let gl = document.querySelector('.' + place);
@@ -211,15 +211,15 @@ function deleteGlass(place) {
     places[place].layers = [];
 }
 
-function drawPatternGlass(place){
+function drawPatternGlass(place) {
     deletePatternGlass(place);
     let pattern = places[place].pattern;
     let glass = document.createElement(pattern.name);
     document.querySelector('.' + place.split('-')[0] + '-order').append(glass);
     glass.querySelector('#first-layer').setAttribute('class', pattern.liquids[0].color);
-    if (pattern.liquids.length>1)
+    if (pattern.liquids.length > 1)
         glass.querySelector('#second-layer').setAttribute('class', pattern.liquids[1].color);
-    if (pattern.liquids.length>2)
+    if (pattern.liquids.length > 2)
         glass.querySelector('#third-layer').setAttribute('class', pattern.liquids[2].color);
     //glass.querySelector('#upper').setAttribute('class', '*второй цвет*');
     //glass.querySelector('#lower').setAttribute('class', '*второй цвет*');
@@ -241,7 +241,7 @@ function deletePatternGlass(place) {
 }
 
 const cocktailsInProgress = document.querySelector('.cocktails-in-progress').children;
-function update() {
+function update() { // TODO: rename
     for (let cocktail of cocktailsInProgress) {
         if (cocktail.children[0]) {
             addDragAndDropEventForCocktailsInProgress(cocktail, true, tryDeleteGlass, [cocktail.className]);
@@ -251,12 +251,9 @@ function update() {
 
 function tryDeleteGlass(glass, glassCopy, placeName) {
 
-    const glassLeft = parseInt(glassCopy.style.left);
-    const glassTop = parseInt(glassCopy.style.top);
+    const glassLeft = parseInt(glass.style.left);
+    const glassTop = parseInt(glass.style.top);
 
-    if (glassCopy.parentNode) {
-        glassCopy.parentNode.removeChild(glassCopy);
-    }
     const a = glass.getBoundingClientRect();
     const glassWidth = a.width;
     const glassHeight = a.height;
@@ -274,10 +271,19 @@ function tryDeleteGlass(glass, glassCopy, placeName) {
         || trashLeft < glassLeft - glassWidth
         || trashTop < glassTop - glassHeight
         || trashBottom > glassBottom + glassHeight) {
-        glass.style.visibility = 'visible';
+
+        let oldLayers = places[placeName].layers.slice();
+        places[placeName].layers = []
+        for (const layer of oldLayers) {
+            chooseBottle = layer;
+            glassesAtBarHandler(placeName);
+        }
+        glassCopy.style.visibility = 'visible';
+        deleteExtraGlasses();
         return;
     }
 
+    deleteExtraGlasses();
     deleteGlass(placeName);
 }
 

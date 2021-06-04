@@ -1,5 +1,4 @@
 export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params=[]){
-    let res;
     obj.addEventListener('mousedown', (event) => {
         const objCopy = obj.cloneNode(true);
         if (hidden) {
@@ -34,27 +33,29 @@ export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params=[]){
 
         objCopy.addEventListener('mouseup', () => {
             document.removeEventListener('mousemove', onMouseMove);
-            res = actionOnMouseUp(obj, objCopy, ...params);
+            actionOnMouseUp(obj, objCopy, ...params);
         });
     });
-    return res;
 }
 
 export function addDragAndDropEventForCocktailsInProgress(cocktail, hidden, actionOnMouseUp, params=[]){
-    let res;
     cocktail.addEventListener('mousedown', (event) => {
 
         let obj = cocktail.children[0].children[0];
-        obj.style.visibility = 'hidden';
-
-        const objCopy = obj.cloneNode(true);
-        objCopy.style.visibility = 'visible';
-
         let rect = cocktail.getBoundingClientRect();
-        objCopy.style.top = rect.top + 'px';
-        objCopy.style.left = rect.left + 'px';
-        objCopy.style.width = rect.width + 'px';
-        objCopy.style.height = rect.height + 'px';
+
+        //const objCopy = cocktail.children[0].children[0].cloneNode(true);
+
+        //создание такого же бокала вместо прошлого
+        let objCopy = document.createElement(cocktail.children[0].tagName);
+        document.getElementsByClassName(cocktail.className)[0].prepend(objCopy);
+        objCopy.style.visibility = 'hidden';
+        //TODO: уметь раскрасить этот бокал также, как тот, что стоял до него
+
+        obj.style.top = rect.top + 'px';
+        obj.style.left = rect.left + 'px';
+        obj.style.width = rect.width + 'px';
+        obj.style.height = rect.height + 'px';
 
         let X = obj.getBoundingClientRect().left;
         let Y = obj.getBoundingClientRect().top;
@@ -62,17 +63,17 @@ export function addDragAndDropEventForCocktailsInProgress(cocktail, hidden, acti
         let shiftX = event.clientX - X;
         let shiftY = event.clientY - Y;
 
-        objCopy.style.position = 'absolute';
-        objCopy.style.zIndex = '1000';
-        document.body.append(objCopy);
+        obj.style.position = 'absolute';
+        obj.style.zIndex = '1000';
+        document.body.append(obj); //change
 
         moveAt(event.pageX, event.pageY);
 
         // переносит объект на координаты (pageX, pageY),
         // дополнительно учитывая изначальный сдвиг относительно указателя мыши
         function moveAt(pageX, pageY) {
-            objCopy.style.left = pageX - shiftX + 'px';
-            objCopy.style.top = pageY - shiftY + 'px';
+            obj.style.left = pageX - shiftX + 'px';
+            obj.style.top = pageY - shiftY + 'px';
         }
 
         function onMouseMove(event) {
@@ -82,10 +83,9 @@ export function addDragAndDropEventForCocktailsInProgress(cocktail, hidden, acti
         // передвигаем объект при событии mousemove
         document.addEventListener('mousemove', onMouseMove);
 
-        objCopy.addEventListener('mouseup', () => {
+        obj.addEventListener('mouseup', () => {
             document.removeEventListener('mousemove', onMouseMove);
-            res = actionOnMouseUp(obj, objCopy, ...params);
+            actionOnMouseUp(obj, objCopy, ...params);
         });
     });
-    return res;
 }
