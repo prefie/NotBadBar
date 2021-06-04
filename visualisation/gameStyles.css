@@ -10,6 +10,7 @@ html,
 body {
     width: 100%;
     height: 100vh;
+    overflow: hidden;
 }
 
 div {
@@ -172,6 +173,7 @@ img {
     background-color: #351330;
     display: flex;
     justify-content: space-around;
+    border: 2px solid black;
 }
 
 .cocktails-in-progress {
@@ -432,93 +434,77 @@ water-glass {
     visibility: visible;
 }
 
-/* MAIN MENU */
-
-.logo-wrapper {
-    height: 60%;
-    width: 100%;
-    background-image: url("/visualisation/images/NotBadBar.png");
-    background-size: 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    border: none;
-}
-
-.buttons-wrapper {
-    height: 40%;
-    width: 100%;
-}
-
-.start-button {
-    padding: 2vw 14vw;
-    margin: 0 auto;
-    background-color: #351330;
-    border: 2px solid white;
-    border-radius: 0.4vw;
-    font-size: 3vw;
-    color: white;
-    position: relative;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* LEVELS */
-
-.wrapper-for-levels-screen {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-content: center;
-    background-color: black;
-}
-
-.back-button {
-    padding: 0.5vw 1.5vw;
+.modal {
     position: absolute;
-    top: 1vw;
-    left: 1vw;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 5px solid white;
+    background-color: black;
+    border-radius: 0.5vw;
     color: white;
-    background-color: #351330;
     font-size: 4vw;
-    border: 1px solid white;
-    border-radius: 0.4vw;
+    font-family: sans-serif;
+    padding: 2vw;
+    text-align: center;
+    z-index: 3;
+    visibility: hidden;
+}
+
+.progress-information {
+    display: flex;
+}
+
+.time-money-wrapper {
+    width: 45%;
+}
+
+.progress-money,
+.progress-time {
+    display: flex;
+    padding-left: 6vw;
+}
+
+.progress-money {
+    padding-top: 2vw;
+}
+
+.progress-time {
+    padding-bottom: 2vw;
+}
+
+.earned-money,
+.total-time {
+    font-size: 3vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 1vw;
     font-weight: bold;
 }
 
-.levels-wrapper {
-    width: 80%;
-    top: 50%;
-    left: 50%;
-    margin-right: -50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
+.earned-money-image,
+.total-time-image {
+    display: block;
+    width: 30%;
+    border: none;
+}
+
+.progress-stars {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
+    margin-top: -2vw;
+    border: none;
 }
 
-.level-wrapper {
-    width: 30%;
-    margin: 1vw;
+.progress-star {
+    font-size: 8vw;
 }
 
-.level {
-    padding-top: 1vw;
-    margin-bottom: 2vw;
-    color: white;
-    text-align: center;
-    font-size: 3.5vw;
-    font-family: sans-serif;
-    border: 3px solid white;
-    background-color: #351330;
-}
-
-.start-level-button {
-    width: 100%;
-    padding: 1vw;
+.back-to-levels-button,
+.play-again-button {
+    padding: 1vw 3vw;
     font-size: 2.5vw;
     background-color: #351330;
     color: white;
@@ -527,43 +513,25 @@ water-glass {
     font-weight: bold;
 }
 
-.level-time,
-.level-money,
-.level-stars {
-    border: none;
+.back-to-levels-button {
+    margin-bottom: 1vw;
 }
 
-.level-money,
-.level-time {
-    display: flex;
+.play-again-button {
+    margin-top: 5vw;
+    margin-bottom: 2vw;
+    padding: 1vw 4.75vw;
+}
+
+.overlay {
+    position: fixed;
     width: 100%;
-    justify-content: center;
-    align-items: center;
-    border: none;
-}
-
-.level-time {
-    margin-top: 2vw;
-}
-
-.time-image,
-.money-image {
-    display: block;
-    width: 25%;
-    padding: 0.4vw;
-    border: none;
-}
-
-.money,
-.time {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: none;
-}
-
-.level-stars {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 2;
+    visibility: hidden;
 }
