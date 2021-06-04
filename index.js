@@ -74,6 +74,10 @@ app.get('/main', (req, res) => {
     res.render('start');
 });
 
+app.get('/levels', (req, res) => {
+    res.render('levels');
+});
+
 app.post('/game/chooseGlass/:glassId/:ord', (req, res) => {
     console.log(orders);
     orders[req.params['ord']].chooseGlass(req.params['glassId']);
