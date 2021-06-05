@@ -24,21 +24,27 @@ export class Bar {
     }
 
     tryPassOrder(order) {
-        if (order.status === 'Not completed' || order.status === 'Fail') {
+        if (order.status === 'Not completed') {
             return false;
         }
         if (order.status === 'Completed') {
             this.money += order.price;
         }
-        this.ordersInProgress = this.ordersInProgress.filter(ord => ord.id !== order.id);
+
+        this.filter()
+
+        return order.status !== 'Fail';
+
+    }
+
+    filter() {
+        this.ordersInProgress = this.ordersInProgress.filter(ord => ord.status === "Not completed");
         if (this.orders.length === 0 && this.ordersInProgress.length === 0) {
             this.end(this);
         }
-        return true;
     }
 
     end(bar) {
-        // TODO: уровень завершился, что делаем?
         if (this.money < this.levelTarget) {
             this.status = 'Fail';
         } else {

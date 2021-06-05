@@ -27,7 +27,7 @@ export class Order {
 
     addIngredientInGlass(ingredient) {
         this.glass.tryAddIngredient(ingredient);
-        this.tryPassOrder()
+        this.tryPassOrder();
     }
 
     tryPassOrder() {

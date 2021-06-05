@@ -7,8 +7,8 @@ export const colors = {
 };
 
 export const toppingsDict = {
-    'cherries': 'cherry',
-    'limes': 'lime',
-    'olives': 'olive',
-    'strawberries': 'strawberry'
+    'cherries': 'Cherry',
+    'limes': 'Lime',
+    'olives': 'Olive',
+    'strawberries': 'Strawberry'
 };

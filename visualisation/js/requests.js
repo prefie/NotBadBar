@@ -37,8 +37,8 @@ export async function requestOrder () { // TODO: здесь надо бы виз
     return await response.json();
 }
 
-export async function requestL (liquidId, orderId) {
-    let response = await fetch('/game/chooseLiquids/'+ liquidId + '/' + orderId, {
+export async function requestL (liquidId, orderId, isLiquid) {
+    let response = await fetch('/game/chooseLiquids/'+ liquidId + '/' + orderId + '/' + isLiquid, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'

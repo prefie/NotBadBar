@@ -1,3 +1,5 @@
 const button = document.querySelector('.start-level-button');
 button.addEventListener('click', ()=> window.location.replace('/game'));
-document.cookie = `user=${100}`;
+
+const button1 = document.querySelector('.back-button');
+button1.addEventListener('click', () => window.location.replace('/main'))

@@ -38,7 +38,9 @@ export class Glass {
         return other instanceof Glass
             && this.name === other.name
             && this.liquids.length === other.liquids.length
-            && this.liquids.every((x, i) => x.equals(other.liquids[i]));
+            && this.liquids.every((x, i) => x.equals(other.liquids[i]))
+            && (this.topping !== null && this.topping.equals(other.topping)
+            || this.topping === other.topping && this.topping === null);
     }
 }
 

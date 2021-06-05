@@ -5,7 +5,7 @@ class Ingredient {
     }
 
     equals(other) {
-        return this.name === other.name && this.price === other.price;
+        return other !== null && this.name === other.name && this.price === other.price;
     }
 }
 

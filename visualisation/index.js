@@ -18,10 +18,16 @@ function moveProgressBar(choosePlace, milliseconds) {
                 console.log(data);
                 clearInterval(id);
                 deleteGlass(choosePlace);
-                places[choosePlace].id = data['id'];
-                places[choosePlace].pattern = data['pattern'];
-                drawPatternGlass(choosePlace);
-                places[choosePlace].progressBar = moveProgressBar(choosePlace, data.time);
+                deletePatternGlass(choosePlace);
+                if (data['status'] === 'Win' || data['status'] === 'Fail') {
+                    end(data['status']);
+                } else {
+                    let place = pl[Math.floor(Math.random() * pl.length)];
+                    places[place].id = data['id'];
+                    places[place].pattern = data['pattern'];
+                    drawPatternGlass(place);
+                    places[place].progressBar = moveProgressBar(place, data.time);
+                }
             });
         } else {
             changeColor(elem);
@@ -33,8 +39,9 @@ function moveProgressBar(choosePlace, milliseconds) {
     return id;
 }
 
+const pl = ['first-glass', 'second-glass', 'third-glass', 'fourth-glass'];
 const places = {};
-for (const gl of ['first-glass', 'second-glass', 'third-glass', 'fourth-glass']) {
+for (const gl of pl) {
     places[gl] = {
         'id': null,
         'pattern': null,
@@ -48,10 +55,11 @@ for (const gl of ['first-glass', 'second-glass', 'third-glass', 'fourth-glass'])
 let levelTarget = null;
 
 firstRequest().then(data => {
-    places['first-glass'].id = data['id'];
-    places['first-glass'].progressBar = moveProgressBar('first-glass', data['timeout']);
-    places['first-glass'].pattern = data['pattern'];
-    drawPatternGlass('first-glass');
+    let place = pl[Math.floor(Math.random() * pl.length)];
+    places[place].id = data['id'];
+    places[place].progressBar = moveProgressBar(place, data['timeout']);
+    places[place].pattern = data['pattern'];
+    drawPatternGlass(place);
     levelTarget = data['target'];
 });
 
@@ -74,10 +82,13 @@ function tryPutGlass(glass, glassCopy, classGlass) {
     deleteGlass(place);
 
     places[place].chooseGlass = document.createElement(classGlass);
-    requestGlass(classGlass, places[place].id).then((data) => {
-        console.log(data); // JSON data parsed by `response.json()` call
-    }).catch((data) => console.log(data));
-    document.getElementsByClassName(place)[0].prepend(places[place].chooseGlass);
+    if (places[place].id !== null) { // TODO: !!!!!!!!!!!
+        requestGlass(classGlass, places[place].id).then((data) => {
+            console.log(data); // JSON data parsed by `response.json()` call
+        }).catch((data) => console.log(data));
+
+        document.getElementsByClassName(place)[0].prepend(places[place].chooseGlass);
+    }
     //glassesAtBarHandler(place);
     updateCocktailsInProgress();
     return place;
@@ -141,23 +152,36 @@ function glassesAtBarHandler(chooseGlass, chooseBottle) {
     }
 }
 
-function drawLayer(bottleName, choosePlace) {  // TODO: change name
-    places[choosePlace].layers.push(colors[bottleName] || bottleName);
-    requestL(bottleName, places[choosePlace].id).then((data) => {
+function drawLayer(ingredientName, choosePlace, isLiquid=true) {  // TODO: change name
+    if (isLiquid) {
+        places[choosePlace].layers.push(colors[ingredientName] || ingredientName);
+    } else {
+        places[choosePlace].topping = ingredientName;
+    }
+    requestL(ingredientName, places[choosePlace].id, isLiquid).then((data) => {
         console.log(data);
         changeMoney(data['money']);
         if (data['status'] === 'next') {
-            setTimeout(deleteGlass, 1000, choosePlace);
-
-            places[choosePlace].id = data['newId'];
-            places[choosePlace].pattern = data['pattern'];
-            setTimeout(function () {
+            setTimeout(() => {
                 clearInterval(places[choosePlace].progressBar);
-                places[choosePlace].progressBar = moveProgressBar(choosePlace, data['timeout']);
-                drawPatternGlass(choosePlace);
+                deleteGlass(choosePlace);
+                deletePatternGlass(choosePlace);
+            }, 1000);
+
+            let place = pl[Math.floor(Math.random() * pl.length)];
+            places[place].id = data['newId'];
+            places[place].pattern = data['pattern'];
+
+            setTimeout(function () {
+                places[place].progressBar = moveProgressBar(place, data['timeout']);
+                drawPatternGlass(place);
             }, 1000);
         } else if (data['status'] === 'delete') {
             setTimeout(deleteGlass, 1000, choosePlace);
+        } else if (data['status'] === 'Win' || data['status'] === 'Fail') {
+            clearInterval(places[choosePlace].progressBar);
+            end(data['status']);
+            // TODO: ЭТО КОНЕЦ!
         }
     });
 }
@@ -168,7 +192,9 @@ let interval = setInterval(() => {
     let min = +time[0];
     let sec = +time[1];
 
-    if (sec === 0) {
+    if (min === sec && min === 0) {
+        end('Fail');
+    } else if (sec === 0) {
         if (min !== 0) {
             min--;
             sec = 59;
@@ -205,6 +231,9 @@ function drawPatternGlass(place) {
 }
 
 function deletePatternGlass(place) {
+    let progress = document.querySelector('#' + place.split('-')[0] + '-progress-bar')
+    progress.style.height = '100%';
+    changeColor(progress);
     let gl = document.querySelector('.' + place.split('-')[0] + '-order');
     while (gl.firstChild) {
         gl.removeChild(gl.lastChild);
@@ -319,7 +348,7 @@ function toppingsHandler(chooseGlass, chooseTopping) {
         t.setAttribute('class', 'visible-topping');
     }
     places[chooseGlass].topping = chooseTopping;
-    // TODO: requestTopping -- что-то на подобие requestL
+    drawLayer(toppingsDict[chooseTopping], chooseGlass, false);
 }
 
 export function addLayersToGlassClone(placeName) {
@@ -328,7 +357,62 @@ export function addLayersToGlassClone(placeName) {
     for (const layer of oldLayers) {
         glassesAtBarHandler(placeName, layer);
     }
-    if (places[placeName].topping){
+    if (places[placeName].topping) {
         toppingsHandler(placeName, places[placeName].topping);
     }
 }
+
+function end(status) {
+    clearInterval(interval);
+    if (status === 'Win') {
+        let win = document.querySelector('.level-complete-modal');
+        win.style.visibility = 'visible';
+        document.querySelector('.overlay').style.visibility = 'visible';
+
+        let m = +document.querySelector('.coin-value').textContent;
+
+        let doc = document.querySelector('.progress-stars');
+        if (m >= levelTarget) {
+            doc.querySelector('.first-star').style.color = '#FFC700';
+        }
+
+        if (m >= levelTarget * 1.5) {
+            doc.querySelector('.second-star').style.color = '#FFC700';
+        }
+
+        if (m >= levelTarget * 2) {
+            doc.querySelector('.third-star').style.color = '#FFC700';
+        }
+
+        document.querySelector('.total-time').textContent = document.querySelector('.time-left').textContent;
+        document.querySelector('.earned-money').textContent = `${m}`;
+
+        let button = win.querySelector('.back-to-levels-button');
+        button.addEventListener('click', ()=> window.location.replace('/levels'));
+    } else {
+        let fail = document.querySelector('.level-lose-modal');
+        fail.style.visibility = 'visible';
+        document.querySelector('.overlay').style.visibility = 'visible';
+
+        let button = fail.querySelector('.back-to-levels-button');
+        button.addEventListener('click', () => window.location.replace('/levels'));
+        let button1 = fail.querySelector('.play-again-button');
+        button1.addEventListener('click', () => window.location.replace('/game'));
+
+    }
+    console.log('!!!!' + status);
+}
+
+window.onunload = async function() {
+    await fetch('/game/deleteBar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: {}
+    });
+
+    return false;
+}
+
+window.confirm = null;
