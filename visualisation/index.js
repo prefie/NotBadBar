@@ -1,9 +1,7 @@
 import {changeColor} from './js/functions.js';
 import {addDragAndDropEvent, addDragAndDropEventForCocktailsInProgress} from './js/dragAndDrop.js';
 import {requestL, requestOrder, requestGlass, firstRequest} from './js/requests.js';
-import {tryGetCocktailPlace,
-    deleteExtraGlasses,
-    checkObjNearGlass} from './js/glassFunctions.js';
+import {tryGetCocktailPlace, deleteExtraGlasses, checkObjNearGlass} from './js/glassFunctions.js';
 import {colors, toppingsDict} from './js/config.js';
 
 function moveProgressBar(choosePlace, milliseconds) {
@@ -145,7 +143,7 @@ function tryPourLiquid(bottle, bottleCopy) {
 
         if (checkObjNearGlass(cocktail, bLeft, bRight, bTop, bBottom)) {
             let chooseBottle = bottle.classList[bottle.classList.length - 1];
-            glassesAtBarHandler(cocktail.className.toLowerCase(), chooseBottle);
+            drawLayer(chooseBottle, cocktail.className.toLowerCase(), true);
             return;
         }
     }
@@ -165,23 +163,21 @@ function glassesAtBarHandler(chooseGlass, chooseBottle) {
 
     if (places[chooseGlass].layers.length === 0) {
         firstLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
-        drawLayer(chooseBottle, chooseGlass); // TODO: надо поменять местами методы
     } else if (places[chooseGlass].layers.length === 1) {
         // upper.setAttribute('class', colors[chooseBottle]); // TODO: сломались градиенты, надо чинить
         secondLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
-        drawLayer(chooseBottle, chooseGlass);
     } else if (places[chooseGlass].layers.length === 2) {
         // lower.setAttribute('class', places[chooseGlass].layers[1]);
         thirdLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
-        drawLayer(chooseBottle, chooseGlass);
     }
+    places[chooseGlass].layers.push(colors[chooseBottle] || chooseBottle);
 }
 
 function drawLayer(ingredientName, choosePlace, isLiquid=true) {  // TODO: change name
     if (isLiquid) {
-        places[choosePlace].layers.push(colors[ingredientName] || ingredientName);
+        glassesAtBarHandler(choosePlace, ingredientName);
     } else {
-        places[choosePlace].topping = ingredientName;
+        toppingsHandler(choosePlace, ingredientName);
     }
     requestL(ingredientName, places[choosePlace].id, isLiquid).then((data) => {
         console.log(data);
@@ -356,7 +352,7 @@ function tryPutTopping(topping, toppingCopy) {
 
         if (checkObjNearGlass(cocktail, bLeft, bRight, bTop, bBottom)) {
             let chooseTopping = topping.classList[topping.classList.length - 1];
-            toppingsHandler(cocktail.className.toLowerCase(), chooseTopping);
+            drawLayer(toppingsDict[chooseTopping], cocktail.className.toLowerCase(), false);
             return;
         }
     }
@@ -367,12 +363,11 @@ function toppingsHandler(chooseGlass, chooseTopping) {
         return;
     }
     let glass = document.querySelector(`.${chooseGlass}`).children[0];
-    let topping = glass.querySelectorAll(`.${toppingsDict[chooseTopping]}`);
+    let topping = glass.querySelectorAll(`.${chooseTopping}`);
     for (let t of topping){
         t.setAttribute('class', 'visible-topping');
     }
     places[chooseGlass].topping = chooseTopping;
-    drawLayer(toppingsDict[chooseTopping], chooseGlass, false);
 }
 
 export function addLayersToGlassClone(placeName) {

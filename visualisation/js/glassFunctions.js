@@ -26,7 +26,7 @@ export function tryGetCocktailPlace(glass, glassCopy) {
 
         if (placeRight > glassRight + glassWidth
             || placeLeft < glassLeft - glassWidth
-            || placeTop < glassTop - glassHeight
+            || placeTop < glassTop - 2 * glassHeight
             || placeBottom > glassBottom + 2 * glassHeight) {
             continue;
         }
@@ -61,6 +61,6 @@ export function checkObjNearGlass(glass, objLeft, objRight, objTop, objBottom) {
 
     return !(objRight > gRight + gWidth
         || objLeft < gLeft - gWidth
-        || objTop < gTop - gHeight
-        || objBottom > gBottom + gHeight);
+        || objTop < gTop - 2 * gHeight
+        || objBottom > gBottom + 2 * gHeight);
 }
