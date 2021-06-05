@@ -42,6 +42,7 @@ for (const gl of pl) {
 }
 
 let levelTarget = null;
+let level = '.first-stars';
 let timeBar = 0;
 let countPlaces = 1;
 let minTimePause = 0;
@@ -58,6 +59,7 @@ firstRequest().then(data => {
     countPlaces = data['countPlaces'];
     minTimePause = data['minTimePause'];
     maxTimePause = data['maxTimePause'];
+    level = data['level'];
 
     for (let i = 0; i < countPlaces - 1; i++) {
         getNextOrder();
@@ -200,6 +202,11 @@ function drawLayer(ingredientName, choosePlace, isLiquid=true) {  // TODO: chang
             // TODO: ЭТО КОНЕЦ!
         }
     });
+}
+if (localStorage.getItem('.first-stars') === null) {
+    localStorage.setItem('.first-stars', '0');
+    localStorage.setItem('.second-stars', '0');
+    localStorage.setItem('.third-stars', '0');
 }
 
 let timer = document.querySelector('.time-left');
@@ -402,14 +409,19 @@ function end(status) {
         let doc = document.querySelector('.progress-stars');
         if (m >= levelTarget) {
             doc.querySelector('.first-star').style.color = '#FFC700';
+            if (+localStorage.getItem(level)<1)
+                localStorage.setItem(level, '1');
         }
 
         if (m >= levelTarget * 1.5) {
             doc.querySelector('.second-star').style.color = '#FFC700';
+            if (+localStorage.getItem(level)<2)
+                localStorage.setItem(level, '2');
         }
 
         if (m >= levelTarget * 2) {
             doc.querySelector('.third-star').style.color = '#FFC700';
+            localStorage.setItem(level, '3');
         }
 
         document.querySelector('.total-time').textContent =
@@ -445,7 +457,6 @@ function getMilliseconds(timer) {
     let sec = +time[1];
     return min * 60 * 1000 + sec * 1000;
 }
-
 window.onunload = async function() {
     await fetch('/game/deleteBar', {
         method: 'POST',

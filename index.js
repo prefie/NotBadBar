@@ -60,7 +60,8 @@ const levels = {
         'countPlaces': 1,
         'timeForLayer': 6000,
         'minTimePause': 0,
-        'maxTimePause': 0
+        'maxTimePause': 0,
+        'level': '.first-stars'
     },
     '2': {
         'count': 30,
@@ -70,7 +71,8 @@ const levels = {
         'countPlaces': 2,
         'timeForLayer': 6000,
         'minTimePause': 2000,
-        'maxTimePause': 8000
+        'maxTimePause': 8000,
+        'level': '.second-stars'
     },
     '3': {
         'count': 50,
@@ -80,7 +82,8 @@ const levels = {
         'countPlaces': 4,
         'timeForLayer': 10000,
         'minTimePause': 4000,
-        'maxTimePause': 12000
+        'maxTimePause': 12000,
+        'level': '.third-stars'
     }
 };
 
@@ -145,7 +148,8 @@ app.post('/game/firstOrder', (req, res) => {
         'time': user.bar.time,
         'countPlaces': user.bar.maxOrders,
         'minTimePause': user.level['minTimePause'],
-        'maxTimePause': user.level['maxTimePause']
+        'maxTimePause': user.level['maxTimePause'],
+        'level': user.level['level']
     }))
 });
 
