@@ -95,8 +95,16 @@ app.get('/game/:level', (req, res) => {
     }
 
     const user = {};
-    const level = levels[req.params['level']];
-    user.bar = generateBar(level['count'], level['layers'], level['target'], level['time'], level['countPlaces'], level['timeForLayer']);
+    user.level = levels[req.params['level']];
+    user.bar = generateBar(
+        user.level['count'],
+        user.level['layers'],
+        user.level['target'],
+        user.level['time'],
+        user.level['countPlaces'],
+        user.level['timeForLayer']
+    );
+
     user.orders = {};
 
     users[cookie] = user;
@@ -135,7 +143,9 @@ app.post('/game/firstOrder', (req, res) => {
         'pattern': order.patternGlass,
         'target': user.bar.levelTarget,
         'time': user.bar.time,
-        'countPlaces': user.bar.maxOrders
+        'countPlaces': user.bar.maxOrders,
+        'minTimePause': user.level['minTimePause'],
+        'maxTimePause': user.level['maxTimePause']
     }))
 });
 

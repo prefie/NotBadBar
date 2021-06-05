@@ -83,7 +83,7 @@ function getNextOrder() {
                 places[place].progressBar = moveProgressBar(place, data.time);
             }
         });
-    }, Math.floor(Math.random() * (maxTimePause - minTimePause)) * 1000 + minTimePause); // время от 3 до 10 секунд (в мс)
+    }, Math.floor(Math.random() * (maxTimePause - minTimePause)) + minTimePause); // время от 3 до 10 секунд (в мс)
 
     timeouts.push(timeout);
 }
