@@ -51,7 +51,40 @@ function deleteBar(cookie) {
     delete users[cookie];
 }
 
-app.get('/game', (req, res) => {
+const levels = {
+    '1': {
+        'count': 25,
+        'layers': 2,
+        'target': 250,
+        'time': 100000,
+        'countPlaces': 1,
+        'timeForLayer': 6000,
+        'minTimePause': 0,
+        'maxTimePause': 0
+    },
+    '2': {
+        'count': 30,
+        'layers': 3,
+        'target': 300,
+        'time': 120000,
+        'countPlaces': 2,
+        'timeForLayer': 6000,
+        'minTimePause': 2000,
+        'maxTimePause': 8000
+    },
+    '3': {
+        'count': 50,
+        'layers': 3,
+        'target': 500,
+        'time': 180000,
+        'countPlaces': 4,
+        'timeForLayer': 10000,
+        'minTimePause': 4000,
+        'maxTimePause': 12000
+    }
+};
+
+app.get('/game/:level', (req, res) => {
     console.log(req.cookies);
     let cookie = '';
     if (!('token' in req.cookies)) {
@@ -62,8 +95,8 @@ app.get('/game', (req, res) => {
     }
 
     const user = {};
-
-    user.bar = generateBar(5, 3, 14);
+    const level = levels[req.params['level']];
+    user.bar = generateBar(level['count'], level['layers'], level['target'], level['time'], level['countPlaces'], level['timeForLayer']);
     user.orders = {};
 
     users[cookie] = user;
@@ -72,7 +105,7 @@ app.get('/game', (req, res) => {
     user.bar.start();
     const time = user.bar.time / 1000;
     const min = Math.floor(time / 60);
-    const sec = (time % 60 + '').padStart(2, '0');
+    const sec = (Math.floor(time % 60) + '').padStart(2, '0');
     res.render('game', {barTime: `${min}:${sec}`});
 });
 
@@ -87,8 +120,6 @@ function makeId(length) {
 }
 
 app.post('/game/firstOrder', (req, res) => {
-    //bar.orders.push(new Order(228, new Glass('water-glass', 3, [new Liquid('Campari', 7)]), 10000, 21))
-
     const user = users[req.cookies['token']];
 
     const order = user.bar.orders.pop();
@@ -102,7 +133,9 @@ app.post('/game/firstOrder', (req, res) => {
         'id': order.id,
         'timeout': order.time,
         'pattern': order.patternGlass,
-        'target': user.bar.levelTarget
+        'target': user.bar.levelTarget,
+        'time': user.bar.time,
+        'countPlaces': user.bar.maxOrders
     }))
 });
 
@@ -143,13 +176,19 @@ app.post('/game/getOrder', (req, res) => {
             'id': order.id,
             'time': order.time,
             'pattern': order.patternGlass,
-            'status': user.bar.status
+            'status': user.bar.status,
+            'next': true
         }));
     } else {
         user.bar.filter();
-        res.send({
-            'status': user.bar.status
-        }); // TODO: тут конец уровня
+        res.send(JSON.stringify({
+            'status': user.bar.status,
+            'next': false
+        }));
+
+        console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
+        console.log(user.bar.orders.length);
+        console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
     }
 })
 
@@ -171,23 +210,13 @@ app.post('/game/chooseLiquids/:liq/:ord/:isLiquid', (req, res) => {
     console.log('____');
 
     const answer = {
-        'newId': null,
         'money': user.bar.money,
-        'status': 'wait',
-        'timeout': 'none',
-        'pattern': null
+        'status': 'wait'
     };
 
     if (status && user.bar.orders.length > 0) {
-        let order = user.bar.orders.pop();
-        user.orders[order.id] = order;
-
-        answer['newId'] = order.id;
         answer['status'] = 'next';
-        answer['timeout'] = order.time;
-        answer['pattern'] = order.patternGlass
         res.send(JSON.stringify(answer));
-        user.bar.tryGetNextOrder(user.orders[order.id]);
     } else if (status) {
         if (user.bar.ordersInProgress.length < 1) {
             answer['status'] = user.bar.status

@@ -65,7 +65,7 @@ export class Bar {
     }
 }
 
-export function generateOrder(maxLayers, topping, id) {
+export function generateOrder(maxLayers, topping, id, timeForLayer) {
     let glass = glasses[Math.floor(Math.random()*glasses.length)];
     const layers = [];
     let sum = 0;
@@ -81,24 +81,24 @@ export function generateOrder(maxLayers, topping, id) {
         return new Order(
             id,
             new Glass(glass, layers.length, layers, t),
-            layers.length * 5000 + 3000, sum*2);
+            (layers.length + 1) * timeForLayer, sum * 2);
     }
     return new Order(
         id,
         new Glass(glass, layers.length, layers),
-        layers.length * 5000, sum*2);
+        layers.length * timeForLayer, sum * 2);
 }
 
-export function generateBar(ordersCount, maxLayers, levelTarget, ) {
+export function generateBar(ordersCount, maxLayers, levelTarget, timeLevel, maxOrders, timeForLayer) {
     const orders = [];
     let time = 0;
     for (let i=0; i<ordersCount; i++) {
-        const order = generateOrder(maxLayers, Math.random() > 0.5, i);
+        const order = generateOrder(maxLayers, Math.random() > 0.5, i, timeForLayer);
         orders.push(order);
         time += order.time;
     }
 
-    return new Bar(orders, glasses, liquids, toppings, time, levelTarget, 4);
+    return new Bar(orders, glasses, liquids, toppings, timeLevel, levelTarget, maxOrders);
 }
 
 export const glasses = [

@@ -14,21 +14,11 @@ function moveProgressBar(choosePlace, milliseconds) {
     function frame() {
         if (height <= 0) {
             clearInterval(id);
-            requestOrder().then((data) => {
-                console.log(data);
-                clearInterval(id);
-                deleteGlass(choosePlace);
-                deletePatternGlass(choosePlace);
-                if (data['status'] === 'Win' || data['status'] === 'Fail') {
-                    end(data['status']);
-                } else {
-                    let place = pl[Math.floor(Math.random() * pl.length)];
-                    places[place].id = data['id'];
-                    places[place].pattern = data['pattern'];
-                    drawPatternGlass(place);
-                    places[place].progressBar = moveProgressBar(place, data.time);
-                }
-            });
+            deleteGlass(choosePlace);
+            deletePatternGlass(choosePlace);
+            places[choosePlace].id = null;
+
+            getNextOrder();
         } else {
             changeColor(elem);
             height--;
@@ -39,6 +29,7 @@ function moveProgressBar(choosePlace, milliseconds) {
     return id;
 }
 
+const timeouts = [];
 const pl = ['first-glass', 'second-glass', 'third-glass', 'fourth-glass'];
 const places = {};
 for (const gl of pl) {
@@ -53,6 +44,10 @@ for (const gl of pl) {
 }
 
 let levelTarget = null;
+let timeBar = 0;
+let countPlaces = 1;
+let minTimePause = 0;
+let maxTimePause = 0;
 
 firstRequest().then(data => {
     let place = pl[Math.floor(Math.random() * pl.length)];
@@ -61,7 +56,37 @@ firstRequest().then(data => {
     places[place].pattern = data['pattern'];
     drawPatternGlass(place);
     levelTarget = data['target'];
+    timeBar = data['time'];
+    countPlaces = data['countPlaces'];
+    minTimePause = data['minTimePause'];
+    maxTimePause = data['maxTimePause'];
+
+    for (let i = 0; i < countPlaces - 1; i++) {
+        getNextOrder();
+    }
 });
+
+function getNextOrder() {
+    let timeout = setTimeout(function() {
+        requestOrder().then((data) => {
+            console.log(data);
+            if (data['status'] === 'Win' || data['status'] === 'Fail') {
+                end(data['status']);
+            } else if (data['next']) {
+                const freePlace = pl.filter(x => places[x].id === null);
+                let place = freePlace[Math.floor(Math.random() * freePlace.length)];
+                console.log(places)
+                console.log(data)
+                places[place].id = data['id'];
+                places[place].pattern = data['pattern'];
+                drawPatternGlass(place);
+                places[place].progressBar = moveProgressBar(place, data.time);
+            }
+        });
+    }, Math.floor(Math.random() * (maxTimePause - minTimePause)) * 1000 + minTimePause); // время от 3 до 10 секунд (в мс)
+
+    timeouts.push(timeout);
+}
 
 let glasses = document.querySelectorAll('.glass');
 for (let glass of glasses) {
@@ -140,7 +165,7 @@ function glassesAtBarHandler(chooseGlass, chooseBottle) {
 
     if (places[chooseGlass].layers.length === 0) {
         firstLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
-        drawLayer(chooseBottle, chooseGlass);
+        drawLayer(chooseBottle, chooseGlass); // TODO: надо поменять местами методы
     } else if (places[chooseGlass].layers.length === 1) {
         // upper.setAttribute('class', colors[chooseBottle]); // TODO: сломались градиенты, надо чинить
         secondLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
@@ -162,20 +187,15 @@ function drawLayer(ingredientName, choosePlace, isLiquid=true) {  // TODO: chang
         console.log(data);
         changeMoney(data['money']);
         if (data['status'] === 'next') {
+            clearInterval(places[choosePlace].progressBar);
             setTimeout(() => {
-                clearInterval(places[choosePlace].progressBar);
                 deleteGlass(choosePlace);
                 deletePatternGlass(choosePlace);
+                places[choosePlace].id = null;
+                places[choosePlace].pattern = null;
             }, 1000);
 
-            let place = pl[Math.floor(Math.random() * pl.length)];
-            places[place].id = data['newId'];
-            places[place].pattern = data['pattern'];
-
-            setTimeout(function () {
-                places[place].progressBar = moveProgressBar(place, data['timeout']);
-                drawPatternGlass(place);
-            }, 1000);
+            getNextOrder();
         } else if (data['status'] === 'delete') {
             setTimeout(deleteGlass, 1000, choosePlace);
         } else if (data['status'] === 'Win' || data['status'] === 'Fail') {
@@ -193,7 +213,11 @@ let interval = setInterval(() => {
     let sec = +time[1];
 
     if (min === sec && min === 0) {
-        end('Fail');
+        if (+document.querySelector('.coin-value').textContent >= levelTarget) {
+            end('Win');
+        } else {
+            end('Fail');
+        }
     } else if (sec === 0) {
         if (min !== 0) {
             min--;
@@ -291,7 +315,7 @@ function tryDeleteGlass(glass, glassCopy, placeName) {
 }
 
 function changeMoney(m) {
-    let money = document.querySelector(".coin-value");
+    let money = document.querySelector('.coin-value');
     money.textContent = `${m}`;
 
     if (m >= levelTarget) {
@@ -363,7 +387,16 @@ export function addLayersToGlassClone(placeName) {
 }
 
 function end(status) {
+    for (const obj in places) {
+        if (places[obj].progressBar !== null) {
+            clearInterval(places[obj].progressBar);
+        }
+    }
     clearInterval(interval);
+    for (const timeout of timeouts) {
+        clearTimeout(timeout);
+    }
+
     if (status === 'Win') {
         let win = document.querySelector('.level-complete-modal');
         win.style.visibility = 'visible';
@@ -384,7 +417,8 @@ function end(status) {
             doc.querySelector('.third-star').style.color = '#FFC700';
         }
 
-        document.querySelector('.total-time').textContent = document.querySelector('.time-left').textContent;
+        document.querySelector('.total-time').textContent =
+            getTime(timeBar - getMilliseconds(document.querySelector('.time-left').textContent));
         document.querySelector('.earned-money').textContent = `${m}`;
 
         let button = win.querySelector('.back-to-levels-button');
@@ -397,10 +431,24 @@ function end(status) {
         let button = fail.querySelector('.back-to-levels-button');
         button.addEventListener('click', () => window.location.replace('/levels'));
         let button1 = fail.querySelector('.play-again-button');
-        button1.addEventListener('click', () => window.location.replace('/game'));
+        button1.addEventListener('click', () => window.location.reload());
 
     }
     console.log('!!!!' + status);
+}
+
+function getTime(milliseconds) {
+    const time = milliseconds / 1000;
+    const min = Math.floor(time / 60);
+    const sec = (Math.floor(time % 60) + '').padStart(2, '0');
+    return `${min}:${sec}`;
+}
+
+function getMilliseconds(timer) {
+    let time = timer.split(':');
+    let min = +time[0];
+    let sec = +time[1];
+    return min * 60 * 1000 + sec * 1000;
 }
 
 window.onunload = async function() {
@@ -411,8 +459,10 @@ window.onunload = async function() {
         },
         body: {}
     });
+}
 
-    return false;
+window.onblur = function() {
+    end('Fail');
 }
 
 window.confirm = null;
