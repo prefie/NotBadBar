@@ -205,6 +205,7 @@ function addIngredient(ingredient, place, isLiquid = true) {
         changeMoney(data['money'], levelTarget, endGame);
         if (data['status'] === 'next') {
             clearInterval(places[place].progressBar);
+            places[place].id = -1;
             setTimeout(() => {
                 deleteGlass(place);
                 deletePatternGlass(place);
@@ -277,7 +278,7 @@ function deleteGlass(place) {
 function updateCocktailsInProgress() {
     for (const cocktail of cocktailsInProgress) {
         if (cocktail.children[0]) {
-            addDragAndDropEventForCocktailsInProgress(cocktail, true, tryDeleteGlass, [cocktail.className]);
+            addDragAndDropEventForCocktailsInProgress(cocktail, places, tryDeleteGlass, [cocktail.className]);
         }
     }
 }

@@ -42,8 +42,12 @@ export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params = []) {
     });
 }
 
-export function addDragAndDropEventForCocktailsInProgress(cocktail, hidden, actionOnMouseUp, params = []) {
+export function addDragAndDropEventForCocktailsInProgress(cocktail, places, actionOnMouseUp, params = []) {
     cocktail.addEventListener('mousedown', (event) => {
+
+        if (places[cocktail.className].id === -1) {
+            return;
+        }
 
         let svg = cocktail.children[0].children[0];
         let rect = cocktail.getBoundingClientRect();
