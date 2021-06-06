@@ -1,7 +1,7 @@
-const docs = ['.first-stars', '.second-stars', '.third-stars'];
-for (let i of docs) {
-    let doc = document.querySelector(i);
-    let data = localStorage.getItem(i);
+const stars = ['.first-stars', '.second-stars', '.third-stars'];
+for (let star of stars) {
+    const doc = document.querySelector(star);
+    const data = localStorage.getItem(star);
     if (data === '1') {
         doc.querySelector('.first-star').style.color = '#FFC700';
     }
@@ -17,14 +17,14 @@ for (let i of docs) {
 }
 
 
-const button = document.querySelector('.first-button');
-button.addEventListener('click', () => window.location.replace('/game/1'))
+const firstButton = document.querySelector('.first-button');
+firstButton.addEventListener('click', () => window.location.replace('/game/1'))
 
-const button1 = document.querySelector('.second-button');
-button1.addEventListener('click', () => window.location.replace('/game/2'))
+const secondButton = document.querySelector('.second-button');
+secondButton.addEventListener('click', () => window.location.replace('/game/2'))
 
-const button2 = document.querySelector('.third-button');
-button2.addEventListener('click', () => window.location.replace('/game/3'))
+const thirdButton = document.querySelector('.third-button');
+thirdButton.addEventListener('click', () => window.location.replace('/game/3'))
 
-const button3 = document.querySelector('.back-button');
-button3.addEventListener('click', () => window.location.replace('/main'));
+const backButton = document.querySelector('.back-button');
+backButton.addEventListener('click', () => window.location.replace('/main'));

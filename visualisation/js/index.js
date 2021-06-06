@@ -104,6 +104,7 @@ function getNextOrder() {
             clearTimeout(timeout);
             return;
         }
+
         requestOrder().then((data) => {
             if (data['status'] === 'Win' || data['status'] === 'Fail') {
                 endGame(data['status']);
@@ -172,24 +173,25 @@ function tryPourLiquid(bottle, bottleCopy) {
     }
 }
 
-function glassesAtBarHandler(chooseGlass, chooseBottle) {
-    if (chooseBottle === null || chooseGlass === null) {
+function glassesAtBarHandler(placeName, bottle) {
+    if (bottle === null || placeName === null) {
         return;
     }
 
-    let doc = document.querySelector('.' + chooseGlass);
-    let firstLayer = doc.querySelector('#first-layer');
-    let secondLayer = doc.querySelector('#second-layer');
-    let thirdLayer = doc.querySelector('#third-layer');
+    const place = document.querySelector('.' + placeName);
+    const firstLayer = place.querySelector('#first-layer');
+    const secondLayer = place.querySelector('#second-layer');
+    const thirdLayer = place.querySelector('#third-layer');
 
-    if (places[chooseGlass].layers.length === 0) {
-        firstLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
-    } else if (places[chooseGlass].layers.length === 1) {
-        secondLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
-    } else if (places[chooseGlass].layers.length === 2) {
-        thirdLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
+    if (places[placeName].layers.length === 0) {
+        firstLayer.setAttribute('class', colors[bottle] || bottle);
+    } else if (places[placeName].layers.length === 1) {
+        secondLayer.setAttribute('class', colors[bottle] || bottle);
+    } else if (places[placeName].layers.length === 2) {
+        thirdLayer.setAttribute('class', colors[bottle] || bottle);
     }
-    places[chooseGlass].layers.push(colors[chooseBottle] || chooseBottle);
+
+    places[placeName].layers.push(colors[bottle] || bottle);
 }
 
 function addIngredient(ingredient, place, isLiquid = true) {
@@ -365,6 +367,7 @@ export function addLayersToGlassClone(place) {
 }
 
 let isGameEnd = false;
+
 function endGame(status) {
     if (isGameEnd) {
         return;
@@ -397,15 +400,20 @@ function endGame(status) {
 
         const backToLevelsButton = win.querySelector('.back-to-levels-button');
         backToLevelsButton.addEventListener('click', () => window.location.replace('/levels'));
+    } else if (status === 'Fail') {
+        loseHandler(document.querySelector('.level-lose-modal'));
     } else {
-        const fail = document.querySelector('.level-lose-modal');
-        fail.style.visibility = 'visible';
+        loseHandler(document.querySelector('.distract-modal'));
+    }
+
+    function loseHandler(element) {
+        element.style.visibility = 'visible';
         document.querySelector('.overlay').style.visibility = 'visible';
 
-        const backToLevelsButton = fail.querySelector('.back-to-levels-button');
+        const backToLevelsButton = element.querySelector('.back-to-levels-button');
         backToLevelsButton.addEventListener('click', () => window.location.replace('/levels'));
 
-        const playAgainButton = fail.querySelector('.play-again-button');
+        const playAgainButton = element.querySelector('.play-again-button');
         playAgainButton.addEventListener('click', () => window.location.reload());
     }
 }
@@ -413,7 +421,7 @@ function endGame(status) {
 window.addEventListener('beforeunload', requestDeleteBar);
 
 window.addEventListener('blur', function () {
-    endGame('Fail');
+    endGame('Distracted');
 })
 
 window.confirm = null;
