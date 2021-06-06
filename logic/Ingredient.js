@@ -10,7 +10,7 @@ class Ingredient {
 }
 
 export class Liquid extends Ingredient {
-    constructor(name, price, color='red') {
+    constructor(name, price, color = 'red') {
         super(name, price);
         this.color = color;
     }
@@ -21,5 +21,3 @@ export class Topping extends Ingredient {
         super(name, price);
     }
 }
-
-/*module.exports = { Ingredient, Liquid, Topping };*/

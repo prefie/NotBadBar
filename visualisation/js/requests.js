@@ -1,5 +1,5 @@
-export async function requestGlass (id, orderId) {
-    let response = await fetch('/game/chooseGlass/'+ id + '/' + orderId, {
+export async function requestGlass(id, orderId) {
+    const response = await fetch('/game/chooseGlass/' + id + '/' + orderId, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
@@ -13,41 +13,48 @@ export async function requestGlass (id, orderId) {
     return await response.json();
 }
 
-export async function firstRequest () {
-    let response = await fetch('/game/firstOrder', {
+export async function requestFirstOrder() {
+    const response = await fetch('/game/firstOrder', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: {}
+        }
     });
 
     return await response.json();
 }
 
-export async function requestOrder () { // TODO: здесь надо бы визуализацию взятия нового заказа
-    let response = await fetch('/game/getOrder/', {
+export async function requestOrder() {
+    const response = await fetch('/game/getOrder/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: {}
+        }
     });
 
     return await response.json();
 }
 
-export async function requestL (liquidId, orderId, isLiquid) {
-    let response = await fetch('/game/chooseLiquids/'+ liquidId + '/' + orderId + '/' + isLiquid, {
+export async function requestIngredient(ingredient, orderId, isLiquid) {
+    const response = await fetch('/game/chooseLiquids/' + ingredient + '/' + orderId + '/' + isLiquid, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
         },
         body: {
-            'id': liquidId,
+            'id': ingredient,
             'orderId': orderId
         }
     });
 
     return await response.json();
+}
+
+export async function requestDeleteBar() {
+    await fetch('/game/deleteBar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+        }
+    });
 }

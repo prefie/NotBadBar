@@ -9,8 +9,8 @@ export function tryGetCocktailPlace(glass, glassCopy) {
         let glassHeight = glass.clientHeight;
 
         if (glass.className === 'glass water-glass') {
-            glassWidth *= 3/2;
-            glassHeight *= 3/2;
+            glassWidth *= 3 / 2;
+            glassHeight *= 3 / 2;
         }
 
         const placeRect = place.getBoundingClientRect();
@@ -41,9 +41,9 @@ export function tryGetCocktailPlace(glass, glassCopy) {
 // удаление из html стаканов, которые создаются при перетаскивании
 export function deleteExtraGlasses() {
     const glasses = document.querySelectorAll('#glass');
-    for (let gl of glasses) {
-        if (gl.parentNode.nodeName.toLowerCase() === 'body') {
-            gl.parentNode.removeChild(gl);
+    for (let glass of glasses) {
+        if (glass.parentNode.nodeName.toLowerCase() === 'body') {
+            glass.parentNode.removeChild(glass);
         }
     }
 }

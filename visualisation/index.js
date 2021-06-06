@@ -1,37 +1,20 @@
-import {changeColor} from './js/functions.js';
+import {changeColor, getMilliseconds, getTime} from './js/infrastructureFunctions.js';
 import {addDragAndDropEvent, addDragAndDropEventForCocktailsInProgress} from './js/dragAndDrop.js';
-import {requestL, requestOrder, requestGlass, firstRequest} from './js/requests.js';
+import {requestIngredient, requestOrder, requestGlass, requestFirstOrder, requestDeleteBar} from './js/requests.js';
 import {tryGetCocktailPlace, deleteExtraGlasses, checkObjNearGlass} from './js/glassFunctions.js';
+import {changeMoney, drawResultStars, runTimer} from './js/styleFunctions.js';
 import {colors, toppingsDict} from './js/config.js';
 
-function moveProgressBar(choosePlace, milliseconds) {
-    let progress = choosePlace.split('-')[0] + '-progress-bar';
-    let elem = document.querySelector('#' + progress);
-    let height = 100;
-    let id = setInterval(frame, milliseconds / 100); // тут время на приготовление коктейля
-    function frame() {
-        if (height <= 0) {
-            clearInterval(id);
-            deleteGlass(choosePlace);
-            deletePatternGlass(choosePlace);
-            places[choosePlace].id = null;
-
-            getNextOrder();
-        } else {
-            changeColor(elem);
-            height--;
-            elem.style.height = height + '%';
-        }
-    }
-
-    return id;
-}
-
-const timeouts = [];
-const pl = ['first-glass', 'second-glass', 'third-glass', 'fourth-glass'];
+const ordersTimeouts = [];
+const placeNames = [];
 const places = {};
-for (const gl of pl) {
-    places[gl] = {
+
+const cocktailsInProgress = document.querySelector('.cocktails-in-progress').children;
+
+for (const place of cocktailsInProgress) {
+    const placeName = place.className;
+    placeNames.push(placeName);
+    places[placeName] = {
         'id': null,
         'pattern': null,
         'chooseGlass': null,
@@ -42,18 +25,37 @@ for (const gl of pl) {
 }
 
 let levelTarget = null;
-let level = '.first-stars';
+let level = null;
 let timeBar = 0;
 let countPlaces = 1;
 let minTimePause = 0;
 let maxTimePause = 0;
+let timer = 0;
 
-firstRequest().then(data => {
-    let place = pl[Math.floor(Math.random() * pl.length)];
+const glasses = document.querySelectorAll('.glass');
+for (let glass of glasses) {
+    let classGlass = glass.classList[glass.classList.length - 1];
+    addDragAndDropEvent(glass, false, tryPutGlass, [classGlass]);
+}
+
+const bottles = document.querySelectorAll('.bottle');
+for (const bottle of bottles) {
+    addDragAndDropEvent(bottle, true, tryPourLiquid);
+}
+
+const toppings = document.querySelectorAll('.decoration');
+for (let topping of toppings) {
+    addDragAndDropEvent(topping, false, tryPutTopping);
+}
+
+requestFirstOrder().then(data => {
+    const place = placeNames[Math.floor(Math.random() * placeNames.length)];
     places[place].id = data['id'];
     places[place].progressBar = moveProgressBar(place, data['timeout']);
     places[place].pattern = data['pattern'];
+
     drawPatternGlass(place);
+
     levelTarget = data['target'];
     timeBar = data['time'];
     countPlaces = data['countPlaces'];
@@ -64,34 +66,51 @@ firstRequest().then(data => {
     for (let i = 0; i < countPlaces - 1; i++) {
         getNextOrder();
     }
+
+    timer = runTimer(levelTarget, endGame);
 });
 
+function moveProgressBar(place, milliseconds) {
+    const progressBarName = place.split('-')[0] + '-progress-bar';
+    const progressBar = document.querySelector('#' + progressBarName);
+    let height = 100;
+    const id = setInterval(frame, milliseconds / 100); // тут время на приготовление коктейля
+    function frame() {
+        if (height <= 0) {
+            clearInterval(id);
+            deleteGlass(place);
+            deletePatternGlass(place);
+            places[place].id = null;
+
+            getNextOrder();
+        } else {
+            changeColor(progressBar);
+            height--;
+            progressBar.style.height = height + '%';
+        }
+    }
+
+    return id;
+}
+
 function getNextOrder() {
-    let timeout = setTimeout(function() {
+    const timeout = setTimeout(function () {
         requestOrder().then((data) => {
-            console.log(data);
             if (data['status'] === 'Win' || data['status'] === 'Fail') {
-                end(data['status']);
+                endGame(data['status']);
             } else if (data['next']) {
-                const freePlace = pl.filter(x => places[x].id === null);
-                let place = freePlace[Math.floor(Math.random() * freePlace.length)];
-                console.log(places)
-                console.log(data)
+                const freePlace = placeNames.filter(x => places[x].id === null);
+                const place = freePlace[Math.floor(Math.random() * freePlace.length)];
+
                 places[place].id = data['id'];
                 places[place].pattern = data['pattern'];
                 drawPatternGlass(place);
                 places[place].progressBar = moveProgressBar(place, data.time);
             }
         });
-    }, Math.floor(Math.random() * (maxTimePause - minTimePause)) + minTimePause); // время от 3 до 10 секунд (в мс)
+    }, Math.floor(Math.random() * (maxTimePause - minTimePause)) + minTimePause);
 
-    timeouts.push(timeout);
-}
-
-let glasses = document.querySelectorAll('.glass');
-for (let glass of glasses) {
-    let classGlass = glass.classList[glass.classList.length - 1];
-    addDragAndDropEvent(glass, false, tryPutGlass, [classGlass]);
+    ordersTimeouts.push(timeout);
 }
 
 function tryPutGlass(glass, glassCopy, classGlass) {
@@ -100,28 +119,21 @@ function tryPutGlass(glass, glassCopy, classGlass) {
     }
 
     const {inPlace, place} = tryGetCocktailPlace(glass, glassCopy);
-    if (!inPlace || places[place].layers.length !== 0) {
+    if (!inPlace || places[place].layers.length !== 0 || places[place].topping) {
         return;
     }
 
     deleteGlass(place);
 
     places[place].chooseGlass = document.createElement(classGlass);
-    if (places[place].id !== null) { // TODO: !!!!!!!!!!!
-        requestGlass(classGlass, places[place].id).then((data) => {
-            console.log(data); // JSON data parsed by `response.json()` call
-        }).catch((data) => console.log(data));
+    if (places[place].id !== null) {
+        requestGlass(classGlass, places[place].id).catch(data => console.log(data));
 
         document.getElementsByClassName(place)[0].prepend(places[place].chooseGlass);
     }
-    //glassesAtBarHandler(place);
+
     updateCocktailsInProgress();
     return place;
-}
-
-let bottles = document.querySelectorAll('.bottle');
-for (let bottle of bottles) {
-    addDragAndDropEvent(bottle, true, tryPourLiquid);
 }
 
 function tryPourLiquid(bottle, bottleCopy) {
@@ -145,7 +157,7 @@ function tryPourLiquid(bottle, bottleCopy) {
 
         if (checkObjNearGlass(cocktail, bLeft, bRight, bTop, bBottom)) {
             let chooseBottle = bottle.classList[bottle.classList.length - 1];
-            drawLayer(chooseBottle, cocktail.className.toLowerCase(), true);
+            addIngredient(chooseBottle, cocktail.className.toLowerCase(), true);
             return;
         }
     }
@@ -160,134 +172,108 @@ function glassesAtBarHandler(chooseGlass, chooseBottle) {
     let firstLayer = doc.querySelector('#first-layer');
     let secondLayer = doc.querySelector('#second-layer');
     let thirdLayer = doc.querySelector('#third-layer');
-    let upper = doc.querySelector('#upper');
-    let lower = doc.querySelector('#lower');
 
     if (places[chooseGlass].layers.length === 0) {
         firstLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
     } else if (places[chooseGlass].layers.length === 1) {
-        // upper.setAttribute('class', colors[chooseBottle]); // TODO: сломались градиенты, надо чинить
         secondLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
     } else if (places[chooseGlass].layers.length === 2) {
-        // lower.setAttribute('class', places[chooseGlass].layers[1]);
         thirdLayer.setAttribute('class', colors[chooseBottle] || chooseBottle);
     }
     places[chooseGlass].layers.push(colors[chooseBottle] || chooseBottle);
 }
 
-function drawLayer(ingredientName, choosePlace, isLiquid=true) {  // TODO: change name
+function addIngredient(ingredient, place, isLiquid = true) {
     if (isLiquid) {
-        glassesAtBarHandler(choosePlace, ingredientName);
+        glassesAtBarHandler(place, ingredient);
     } else {
-        toppingsHandler(choosePlace, ingredientName);
+        toppingsHandler(place, ingredient);
     }
-    requestL(ingredientName, places[choosePlace].id, isLiquid).then((data) => {
-        console.log(data);
-        changeMoney(data['money']);
+
+    requestIngredient(ingredient, places[place].id, isLiquid).then((data) => {
+        changeMoney(data['money'], levelTarget);
         if (data['status'] === 'next') {
-            clearInterval(places[choosePlace].progressBar);
+            clearInterval(places[place].progressBar);
             setTimeout(() => {
-                deleteGlass(choosePlace);
-                deletePatternGlass(choosePlace);
-                places[choosePlace].id = null;
-                places[choosePlace].pattern = null;
+                deleteGlass(place);
+                deletePatternGlass(place);
+                places[place].id = null;
+                places[place].pattern = null;
             }, 1000);
 
             getNextOrder();
         } else if (data['status'] === 'delete') {
-            setTimeout(deleteGlass, 1000, choosePlace);
+            setTimeout(deleteGlass, 1000, place);
         } else if (data['status'] === 'Win' || data['status'] === 'Fail') {
-            clearInterval(places[choosePlace].progressBar);
-            end(data['status']);
-            // TODO: ЭТО КОНЕЦ!
+            clearInterval(places[place].progressBar);
+            endGame(data['status']);
         }
     });
 }
+
 if (localStorage.getItem('.first-stars') === null) {
     localStorage.setItem('.first-stars', '0');
     localStorage.setItem('.second-stars', '0');
     localStorage.setItem('.third-stars', '0');
 }
 
-let timer = document.querySelector('.time-left');
-let interval = setInterval(() => {
-    let time = timer.textContent.split(':');
-    let min = +time[0];
-    let sec = +time[1];
-
-    if (min === sec && min === 0) {
-        if (+document.querySelector('.coin-value').textContent >= levelTarget) {
-            end('Win');
-        } else {
-            end('Fail');
-        }
-    } else if (sec === 0) {
-        if (min !== 0) {
-            min--;
-            sec = 59;
-        } else {
-            clearInterval(interval);
-        }
-    } else {
-        sec--;
-    }
-
-    timer.textContent = `${min}:${(sec + '').padStart(2, '0')}`;
-}, 1000);
-
 function drawPatternGlass(place) {
     deletePatternGlass(place);
-    let pattern = places[place].pattern;
-    let glass = document.createElement(pattern.name);
+
+    const pattern = places[place].pattern;
+    const glass = document.createElement(pattern.name);
     document.querySelector('.' + place.split('-')[0] + '-order').append(glass);
     glass.querySelector('#first-layer').setAttribute('class', pattern.liquids[0].color);
-    if (pattern.liquids.length > 1)
+
+    if (pattern.liquids.length > 1) {
         glass.querySelector('#second-layer').setAttribute('class', pattern.liquids[1].color);
-    if (pattern.liquids.length > 2)
+    }
+    if (pattern.liquids.length > 2) {
         glass.querySelector('#third-layer').setAttribute('class', pattern.liquids[2].color);
-    //glass.querySelector('#upper').setAttribute('class', '*второй цвет*');
-    //glass.querySelector('#lower').setAttribute('class', '*второй цвет*');
+    }
 
-    if (pattern.topping !== null) {
-        let topping = glass.querySelectorAll(`.${pattern.topping.name}`);
+    if (pattern.topping) {
+        const toppings = glass.querySelectorAll(`.${pattern.topping.name}`);
 
-        for (let t of topping)
-            t.setAttribute('class', 'visible-topping');
+        for (let topping of toppings) {
+            topping.setAttribute('class', 'visible-topping');
+        }
     }
     glass.style.visibility = 'visible';
 }
 
 function deletePatternGlass(place) {
-    let progress = document.querySelector('#' + place.split('-')[0] + '-progress-bar')
+    const progress = document.querySelector('#' + place.split('-')[0] + '-progress-bar');
     progress.style.height = '100%';
     changeColor(progress);
-    let gl = document.querySelector('.' + place.split('-')[0] + '-order');
-    while (gl.firstChild) {
-        gl.removeChild(gl.lastChild);
+
+    const glass = document.querySelector('.' + place.split('-')[0] + '-order');
+    while (glass.firstChild) {
+        glass.removeChild(glass.lastChild);
     }
 }
 
 function deleteGlass(place) {
-    let glass = document.querySelector('.' + place);
+    const glass = document.querySelector('.' + place);
     while (glass.firstChild) {
         glass.removeChild(glass.lastChild);
     }
+
     places[place].layers = [];
     places[place].topping = null;
 }
 
-const cocktailsInProgress = document.querySelector('.cocktails-in-progress').children;
 function updateCocktailsInProgress() {
-    for (let cocktail of cocktailsInProgress) {
+    for (const cocktail of cocktailsInProgress) {
         if (cocktail.children[0]) {
             addDragAndDropEventForCocktailsInProgress(cocktail, true, tryDeleteGlass, [cocktail.className]);
         }
     }
 }
 
-let trash = document.querySelector('.trash');
-function tryDeleteGlass(glass, glassCopy, placeName) {
+const trash = document.querySelector('.trash');
 
+function tryDeleteGlass(glass, glassCopy, place) {
     const glassLeft = parseInt(glass.style.left);
     const glassTop = parseInt(glass.style.top);
 
@@ -314,30 +300,7 @@ function tryDeleteGlass(glass, glassCopy, placeName) {
         return;
     }
 
-    deleteGlass(placeName);
-}
-
-function changeMoney(m) {
-    let money = document.querySelector('.coin-value');
-    money.textContent = `${m}`;
-
-    if (m >= levelTarget) {
-        document.querySelector('.first-star').style.color = '#FFC700';
-    }
-
-    if (m >= levelTarget * 1.5) {
-        document.querySelector('.second-star').style.color = '#FFC700';
-    }
-
-    if (m >= levelTarget * 2) {
-        document.querySelector('.third-star').style.color = '#FFC700';
-    }
-}
-
-
-const toppings = document.querySelectorAll('.decoration');
-for (let topping of toppings) {
-    addDragAndDropEvent(topping, false, tryPutTopping);
+    deleteGlass(place);
 }
 
 function tryPutTopping(topping, toppingCopy) {
@@ -359,116 +322,83 @@ function tryPutTopping(topping, toppingCopy) {
 
         if (checkObjNearGlass(cocktail, bLeft, bRight, bTop, bBottom)) {
             let chooseTopping = topping.classList[topping.classList.length - 1];
-            drawLayer(toppingsDict[chooseTopping], cocktail.className.toLowerCase(), false);
+            addIngredient(toppingsDict[chooseTopping], cocktail.className.toLowerCase(), false);
             return;
         }
     }
 }
 
-function toppingsHandler(chooseGlass, chooseTopping) {
-    if (places[chooseGlass].topping){
+function toppingsHandler(place, topping) {
+    if (places[place].topping) {
         return;
     }
-    let glass = document.querySelector(`.${chooseGlass}`).children[0];
-    let topping = glass.querySelectorAll(`.${chooseTopping}`);
-    for (let t of topping){
-        t.setAttribute('class', 'visible-topping');
+
+    const glass = document.querySelector(`.${place}`).children[0];
+    const toppings = glass.querySelectorAll(`.${topping}`);
+    for (let topping of toppings) {
+        topping.setAttribute('class', 'visible-topping');
     }
-    places[chooseGlass].topping = chooseTopping;
+
+    places[place].topping = topping;
 }
 
-export function addLayersToGlassClone(placeName) {
-    let oldLayers = places[placeName].layers.slice();
-    places[placeName].layers = []
+export function addLayersToGlassClone(place) {
+    const oldLayers = places[place].layers.slice();
+    places[place].layers = [];
+
     for (const layer of oldLayers) {
-        glassesAtBarHandler(placeName, layer);
+        glassesAtBarHandler(place, layer);
     }
-    if (places[placeName].topping) {
-        toppingsHandler(placeName, places[placeName].topping);
+
+    if (places[place].topping) {
+        toppingsHandler(place, places[place].topping);
     }
 }
 
-function end(status) {
-    for (const obj in places) {
-        if (places[obj].progressBar !== null) {
-            clearInterval(places[obj].progressBar);
+function endGame(status) {
+    for (const place in places) {
+        if (places[place].progressBar !== null) {
+            clearInterval(places[place].progressBar);
         }
     }
-    clearInterval(interval);
-    for (const timeout of timeouts) {
+
+    clearInterval(timer);
+
+    for (const timeout of ordersTimeouts) {
         clearTimeout(timeout);
     }
 
     if (status === 'Win') {
-        let win = document.querySelector('.level-complete-modal');
+        const win = document.querySelector('.level-complete-modal');
         win.style.visibility = 'visible';
         document.querySelector('.overlay').style.visibility = 'visible';
 
-        let m = +document.querySelector('.coin-value').textContent;
-
-        let doc = document.querySelector('.progress-stars');
-        if (m >= levelTarget) {
-            doc.querySelector('.first-star').style.color = '#FFC700';
-            if (+localStorage.getItem(level)<1)
-                localStorage.setItem(level, '1');
-        }
-
-        if (m >= levelTarget * 1.5) {
-            doc.querySelector('.second-star').style.color = '#FFC700';
-            if (+localStorage.getItem(level)<2)
-                localStorage.setItem(level, '2');
-        }
-
-        if (m >= levelTarget * 2) {
-            doc.querySelector('.third-star').style.color = '#FFC700';
-            localStorage.setItem(level, '3');
-        }
+        const money = +document.querySelector('.coin-value').textContent;
+        drawResultStars(money, levelTarget, level);
 
         document.querySelector('.total-time').textContent =
             getTime(timeBar - getMilliseconds(document.querySelector('.time-left').textContent));
-        document.querySelector('.earned-money').textContent = `${m}`;
+        document.querySelector('.earned-money').textContent = `${money}`;
 
-        let button = win.querySelector('.back-to-levels-button');
-        button.addEventListener('click', ()=> window.location.replace('/levels'));
+        const backToLevelsButton = win.querySelector('.back-to-levels-button');
+        backToLevelsButton.addEventListener('click', () => window.location.replace('/levels'));
     } else {
-        let fail = document.querySelector('.level-lose-modal');
+        const fail = document.querySelector('.level-lose-modal');
         fail.style.visibility = 'visible';
         document.querySelector('.overlay').style.visibility = 'visible';
 
-        let button = fail.querySelector('.back-to-levels-button');
-        button.addEventListener('click', () => window.location.replace('/levels'));
-        let button1 = fail.querySelector('.play-again-button');
-        button1.addEventListener('click', () => window.location.reload());
+        const backToLevelsButton = fail.querySelector('.back-to-levels-button');
+        backToLevelsButton.addEventListener('click', () => window.location.replace('/levels'));
 
+        const playAgainButton = fail.querySelector('.play-again-button');
+        playAgainButton.addEventListener('click', () => window.location.reload());
     }
-    console.log('!!!!' + status);
 }
 
-function getTime(milliseconds) {
-    const time = milliseconds / 1000;
-    const min = Math.floor(time / 60);
-    const sec = (Math.floor(time % 60) + '').padStart(2, '0');
-    return `${min}:${sec}`;
-}
+window.addEventListener('beforeunload', requestDeleteBar);
 
-function getMilliseconds(timer) {
-    let time = timer.split(':');
-    let min = +time[0];
-    let sec = +time[1];
-    return min * 60 * 1000 + sec * 1000;
-}
-window.onunload = async function() {
-    await fetch('/game/deleteBar', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: {}
-    });
-}
-
-window.onblur = function() {
-    end('Fail');
-}
+window.addEventListener('blur', function () {
+    endGame('Fail');
+})
 
 window.confirm = null;

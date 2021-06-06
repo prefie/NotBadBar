@@ -1,5 +1,4 @@
-/*const { Glass } = require('./Glass');*/
-import {Glass} from  './Glass.js';
+import {Glass} from './Glass.js';
 
 export class Order {
     constructor(id, patternGlass, time, price) {
@@ -7,18 +6,16 @@ export class Order {
         this.patternGlass = patternGlass;
         this.time = time;
         this.price = price;
-        this.status = "Not completed";
+        this.status = 'Not completed';
     }
 
     start() {
-        // TODO: начинаем выполнение заказа
         setTimeout(this.end, this.time, this);
     }
 
     end(order) {
-        // TODO: заказ завершен, что делаем?
-        if (order.status !== "Completed")
-            order.status = "Fail";
+        if (order.status !== 'Completed')
+            order.status = 'Fail';
     }
 
     chooseGlass(name, limit) {
@@ -31,14 +28,12 @@ export class Order {
     }
 
     tryPassOrder() {
-        if (this.status === "Fail")
+        if (this.status === 'Fail')
             return false;
 
         const result = this.patternGlass.equals(this.glass);
         if (result)
-            this.status = "Completed";
+            this.status = 'Completed';
         return result;
     }
 }
-
-/*module.exports = { Order };*/

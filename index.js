@@ -5,8 +5,7 @@ import cookieParser from 'cookie-parser'
 import {generateBar} from './logic/Bar.js';
 import {Liquid, Topping} from './logic/Ingredient.js';
 import {liquids, toppings} from "./logic/Bar.js";
-import {Order} from "./logic/Order.js";
-import {Glass} from "./logic/Glass.js";
+import {getTime} from './visualisation/js/infrastructureFunctions.js';
 
 
 const port = process.env.PORT ?? 3000;
@@ -14,6 +13,15 @@ const app = express();
 const rootDir = process.cwd();
 
 const users = {};
+
+const prices = {};
+for (let i of liquids) {
+    prices[i.name] = i.price;
+}
+
+for (let i of toppings) {
+    prices[i.name] = i.price;
+}
 
 app.set('view engine', 'hbs');
 
@@ -35,15 +43,8 @@ app.get('/', (_, res) => {
     res.redirect('/main');
 });
 
-app.get('/levels', (_, res) => {
-    res.render('levels');
-});
-
 app.post('/game/deleteBar', (req, res) => {
-    console.log('###');
-    console.log(users);
     deleteBar(req.cookies['token']);
-    console.log(users);
     res.send();
 });
 
@@ -59,8 +60,8 @@ const levels = {
         'time': 100000,
         'countPlaces': 1,
         'timeForLayer': 6000,
-        'minTimePause': 0,
-        'maxTimePause': 0,
+        'minTimePause': 1000,
+        'maxTimePause': 1000,
         'level': '.first-stars'
     },
     '2': {
@@ -88,13 +89,12 @@ const levels = {
 };
 
 app.get('/game/:level', (req, res) => {
-    console.log(req.cookies);
-    let cookie = '';
-    if (!('token' in req.cookies)) {
-        cookie = makeId(32);
-        res.cookie('token', cookie);
-    } else {
+    let cookie;
+    if ('token' in req.cookies) {
         cookie = req.cookies['token'];
+    } else {
+        cookie = makeCookie(32);
+        res.cookie('token', cookie);
     }
 
     const user = {};
@@ -109,37 +109,18 @@ app.get('/game/:level', (req, res) => {
     );
 
     user.orders = {};
-
     users[cookie] = user;
-    console.log(users);
 
     user.bar.start();
-    const time = user.bar.time / 1000;
-    const min = Math.floor(time / 60);
-    const sec = (Math.floor(time % 60) + '').padStart(2, '0');
-    res.render('game', {barTime: `${min}:${sec}`});
+    res.render('game', {barTime: getTime(user.bar.time)});
 });
-
-function makeId(length) {
-    let result = '';
-    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let charactersLength = characters.length;
-    for (let i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
 
 app.post('/game/firstOrder', (req, res) => {
     const user = users[req.cookies['token']];
-
     const order = user.bar.orders.pop();
     user.orders[order.id] = order;
 
     user.bar.tryGetNextOrder(user.orders[order.id]);
-    console.log('___');
-    console.log(order);
-    console.log('___');
     res.send(JSON.stringify({
         'id': order.id,
         'timeout': order.time,
@@ -164,25 +145,15 @@ app.get('/levels', (req, res) => {
 app.post('/game/chooseGlass/:glassId/:ord', (req, res) => {
     const user = users[req.cookies['token']];
 
-    console.log(user.orders);
     user.orders[req.params['ord']].chooseGlass(req.params['glassId']);
     res.send(JSON.stringify(user.orders[req.params['ord']]));
 });
-
-const prices = {};
-for (let i of liquids) {
-    prices[i.name] = i.price;
-}
-
-for (let i of toppings) {
-    prices[i.name] = i.price;
-}
 
 app.post('/game/getOrder', (req, res) => {
     const user = users[req.cookies['token']];
 
     if (user.bar.orders.length > 0) {
-        let order = user.bar.orders.pop();
+        const order = user.bar.orders.pop();
         user.orders[order.id] = order;
 
         user.bar.tryGetNextOrder(user.orders[order.id]);
@@ -199,29 +170,18 @@ app.post('/game/getOrder', (req, res) => {
             'status': user.bar.status,
             'next': false
         }));
-
-        console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
-        console.log(user.bar.orders.length);
-        console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
     }
 })
 
 app.post('/game/chooseLiquids/:liq/:ord/:isLiquid', (req, res) => {
     const user = users[req.cookies['token']];
-    console.log('!!!!!!!!!!!' + req.params['isLiquid']);
     if (req.params['isLiquid'] === 'true') {
         user.orders[req.params['ord']].addIngredientInGlass(new Liquid(req.params['liq'], prices[req.params['liq']]));
     } else {
-        console.log('TOPPING!!!!!!!')
         user.orders[req.params['ord']].addIngredientInGlass(new Topping(req.params['liq'], prices[req.params['liq']]));
     }
 
-    console.log('____');
-    console.log(user.orders[req.params['ord']].glass);
-    console.log(user.orders[req.params['ord']].patternGlass);
     const status = user.bar.tryPassOrder(user.orders[req.params['ord']]);
-    console.log(status);
-    console.log('____');
 
     const answer = {
         'money': user.bar.money,
@@ -243,8 +203,16 @@ app.post('/game/chooseLiquids/:liq/:ord/:isLiquid', (req, res) => {
     } else {
         res.send(JSON.stringify(answer));
     }
-
-    console.log(user.bar.money);
 });
+
+function makeCookie(length) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
 
 app.listen(port, () => console.log(`App listening on port ${port}...`));

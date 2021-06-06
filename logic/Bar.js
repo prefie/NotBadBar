@@ -1,9 +1,9 @@
 import {Order} from './Order.js';
 import {Glass} from './Glass.js';
-import {Liquid, Topping} from "./Ingredient.js";
+import {Liquid, Topping} from './Ingredient.js';
 
 export class Bar {
-    constructor(orders, glasses, liquids, toppings, time, levelTarget, maxOrders=2) {
+    constructor(orders, glasses, liquids, toppings, time, levelTarget, maxOrders = 2) {
         this.orders = orders;
         this.glasses = glasses;
         this.liquids = liquids;
@@ -18,7 +18,6 @@ export class Bar {
     }
 
     start() {
-        // TODO: начинаем уровень
         this.status = 'Started';
         this._timeout = setTimeout(this.end, this.time, this);
     }
@@ -38,7 +37,7 @@ export class Bar {
     }
 
     filter() {
-        this.ordersInProgress = this.ordersInProgress.filter(ord => ord.status === "Not completed");
+        this.ordersInProgress = this.ordersInProgress.filter(ord => ord.status === 'Not completed');
         if (this.orders.length === 0 && this.ordersInProgress.length === 0) {
             this.end(this);
         }
@@ -65,22 +64,22 @@ export class Bar {
     }
 }
 
-export function generateOrder(maxLayers, topping, id, timeForLayer) {
-    let glass = glasses[Math.floor(Math.random()*glasses.length)];
+export function generateOrder(maxLayers, toppingExist, id, timeForLayer) {
+    const glass = glasses[Math.floor(Math.random() * glasses.length)];
     const layers = [];
     let sum = 0;
-    let layersCount = Math.floor(Math.random()*maxLayers) + 1;
-    for (let i=0; i<layersCount; i++) {
-        const l = liquids[Math.floor(Math.random()*liquids.length)];
+    const layersCount = Math.floor(Math.random() * maxLayers) + 1;
+    for (let i = 0; i < layersCount; i++) {
+        const l = liquids[Math.floor(Math.random() * liquids.length)];
         layers.push(l);
         sum += l.price;
     }
-    if (topping) {
-        let t = toppings[Math.floor(Math.random() * toppings.length)];
-        sum += t.price;
+    if (toppingExist) {
+        const randomTopping = toppings[Math.floor(Math.random() * toppings.length)];
+        sum += randomTopping.price;
         return new Order(
             id,
-            new Glass(glass, layers.length, layers, t),
+            new Glass(glass, layers.length, layers, randomTopping),
             (layers.length + 1) * timeForLayer, sum * 2);
     }
     return new Order(
@@ -91,37 +90,32 @@ export function generateOrder(maxLayers, topping, id, timeForLayer) {
 
 export function generateBar(ordersCount, maxLayers, levelTarget, timeLevel, maxOrders, timeForLayer) {
     const orders = [];
-    let time = 0;
-    for (let i=0; i<ordersCount; i++) {
+    for (let i = 0; i < ordersCount; i++) {
         const order = generateOrder(maxLayers, Math.random() > 0.5, i, timeForLayer);
         orders.push(order);
-        time += order.time;
     }
 
     return new Bar(orders, glasses, liquids, toppings, timeLevel, levelTarget, maxOrders);
 }
 
 export const glasses = [
-    "water-glass",
-    "short-glass",
-    "tall-glass",
-    "round-glass"
+    'water-glass',
+    'short-glass',
+    'tall-glass',
+    'round-glass'
 ];
 
 export const liquids = [
-    new Liquid("Absinthe", 4, 'limegreen'),
-    new Liquid("Aperol", 5, 'orange'),
+    new Liquid('Absinthe', 4, 'limegreen'),
+    new Liquid('Aperol', 5, 'orange'),
     new Liquid('Blue-Curasao', 7, 'blue'),
     new Liquid('Bombay-Sapphire', 9, 'lightskyblue'),
-    new Liquid("Campari", 7, 'red')
+    new Liquid('Campari', 7, 'red')
 ];
 
 export const toppings = [
-    new Topping("Lime", 10),
-    new Topping("Cherry", 10),
-    new Topping("Olive", 5),
-    new Topping("Strawberry", 8)
+    new Topping('Lime', 10),
+    new Topping('Cherry', 10),
+    new Topping('Olive', 5),
+    new Topping('Strawberry', 8)
 ];
-
-
-/*module.exports = { Bar };*/

@@ -1,24 +1,20 @@
 const docs = ['.first-stars', '.second-stars', '.third-stars'];
 for (let i of docs) {
     let doc = document.querySelector(i);
-    let st = localStorage.getItem(i);
-    if (st == '1')
-    {
+    let data = localStorage.getItem(i);
+    if (data === '1') {
         doc.querySelector('.first-star').style.color = '#FFC700';
     }
-    if (st == '2')
-    {
+    if (data === '2') {
         doc.querySelector('.first-star').style.color = '#FFC700';
         doc.querySelector('.second-star').style.color = '#FFC700';
     }
-    if (st == '3')
-    {
+    if (data === '3') {
         doc.querySelector('.first-star').style.color = '#FFC700';
         doc.querySelector('.second-star').style.color = '#FFC700';
         doc.querySelector('.third-star').style.color = '#FFC700';
     }
 }
-
 
 
 const button = document.querySelector('.first-button');

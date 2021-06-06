@@ -1,7 +1,7 @@
-import { Topping } from './Ingredient.js'
+import {Topping} from './Ingredient.js'
 
 export class Glass {
-    constructor(name, limit=3, liquids=[], topping=null) {
+    constructor(name, limit = 3, liquids = [], topping = null) {
         this.name = name;
         this.liquids = liquids;
         this.topping = topping;
@@ -29,7 +29,7 @@ export class Glass {
         this.topping = null;
     }
 
-    change(name) { // нужен ли?
+    change(name) {
         if (this.liquids.length === 0)
             this.name = name;
     }
@@ -40,9 +40,6 @@ export class Glass {
             && this.liquids.length === other.liquids.length
             && this.liquids.every((x, i) => x.equals(other.liquids[i]))
             && (this.topping !== null && this.topping.equals(other.topping)
-            || this.topping === other.topping && this.topping === null);
+                || this.topping === other.topping && this.topping === null);
     }
 }
-
-/*module.exports = { Glass };*/
-

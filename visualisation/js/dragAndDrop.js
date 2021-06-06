@@ -1,7 +1,7 @@
 import {addLayersToGlassClone} from '../index.js';
 
 
-export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params=[]){
+export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params = []) {
     obj.addEventListener('mousedown', (event) => {
         const objCopy = obj.cloneNode(true);
         if (hidden) {
@@ -42,7 +42,7 @@ export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params=[]){
     });
 }
 
-export function addDragAndDropEventForCocktailsInProgress(cocktail, hidden, actionOnMouseUp, params=[]){
+export function addDragAndDropEventForCocktailsInProgress(cocktail, hidden, actionOnMouseUp, params = []) {
     cocktail.addEventListener('mousedown', (event) => {
 
         let svg = cocktail.children[0].children[0];
