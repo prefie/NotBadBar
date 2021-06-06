@@ -355,14 +355,16 @@ function toppingsHandler(place, topping) {
 
 export function addLayersToGlassClone(place) {
     const oldLayers = places[place].layers.slice();
+    const oldTopping = places[place].topping;
     places[place].layers = [];
+    places[place].topping = null;
 
     for (const layer of oldLayers) {
         glassesAtBarHandler(place, layer);
     }
 
-    if (places[place].topping) {
-        toppingsHandler(place, places[place].topping);
+    if (oldTopping) {
+        toppingsHandler(place, oldTopping);
     }
 }
 
