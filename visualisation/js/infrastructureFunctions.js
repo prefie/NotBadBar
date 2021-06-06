@@ -35,3 +35,11 @@ export function getMilliseconds(timer) {
     return min * 60 * 1000 + sec * 1000;
 }
 
+export function addClass(topping, classStr) {
+    return topping.split('\n').filter((elem) => elem).map((elem) => {
+        const arr = elem.split(' ').filter(s => s);
+        arr[0] = `${arr[0]} ${classStr}`;
+        return arr.join(' ');
+    }).join('');
+}
+

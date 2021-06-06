@@ -60,3 +60,16 @@ img {
     left: 50%;
     transform: translateX(-50%);
 }
+
+.rules-button {
+    padding: 0.5vw 1.5vw;
+    position: absolute;
+    bottom: 1.5vw;
+    right: 1.5vw;
+    color: white;
+    background-color: #351330;
+    font-size: 4vw;
+    border: 2px solid white;
+    border-radius: 0.4vw;
+    font-weight: bold;
+}

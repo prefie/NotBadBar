@@ -142,6 +142,10 @@ app.get('/levels', (req, res) => {
     res.render('levels');
 });
 
+app.get('/rules', (req, res) => {
+    res.render('rules');
+});
+
 app.post('/game/chooseGlass/:glassId/:ord', (req, res) => {
     const user = users[req.cookies['token']];
 
