@@ -1,0 +1,47 @@
+* {
+    border: none;
+    outline: 0;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+div {
+    user-select: none;
+}
+
+img {
+    pointer-events: none;
+    user-select: none;
+}
+
+.rules-wrapper {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: black;
+    background-image: url("/visualisation/images/Rules.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center -2vw;
+}
+
+.rules-back-button {
+    padding: 0.5vw 1.5vw;
+    position: absolute;
+    top: 1vw;
+    left: 1vw;
+    color: white;
+    background-color: #351330;
+    font-size: 4vw;
+    border: 1px solid white;
+    border-radius: 0.4vw;
+    font-weight: bold;
+}
