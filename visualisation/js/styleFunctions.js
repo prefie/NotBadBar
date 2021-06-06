@@ -1,6 +1,6 @@
 const YELLOW = '#FFC700';
 
-export function changeMoney(money, levelTarget) {
+export function changeMoney(money, levelTarget, endAction) {
     const currentMoney = document.querySelector('.coin-value');
     currentMoney.textContent = `${money}`;
 
@@ -14,6 +14,7 @@ export function changeMoney(money, levelTarget) {
 
     if (money >= levelTarget * 2) {
         document.querySelector('.third-star').style.color = YELLOW;
+        endAction('Win');
     }
 }
 

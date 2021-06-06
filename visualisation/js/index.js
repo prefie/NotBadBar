@@ -76,6 +76,11 @@ function moveProgressBar(place, milliseconds) {
     let height = 100;
     const id = setInterval(frame, milliseconds / 100); // тут время на приготовление коктейля
     function frame() {
+        if (isGameEnd) {
+            clearInterval(id);
+            return id;
+        }
+
         if (height <= 0) {
             clearInterval(id);
             deleteGlass(place);
@@ -95,6 +100,10 @@ function moveProgressBar(place, milliseconds) {
 
 function getNextOrder() {
     const timeout = setTimeout(function () {
+        if (isGameEnd) {
+            clearTimeout(timeout);
+            return;
+        }
         requestOrder().then((data) => {
             if (data['status'] === 'Win' || data['status'] === 'Fail') {
                 endGame(data['status']);
@@ -191,7 +200,7 @@ function addIngredient(ingredient, place, isLiquid = true) {
     }
 
     requestIngredient(ingredient, places[place].id, isLiquid).then((data) => {
-        changeMoney(data['money'], levelTarget);
+        changeMoney(data['money'], levelTarget, endGame);
         if (data['status'] === 'next') {
             clearInterval(places[place].progressBar);
             setTimeout(() => {
@@ -355,14 +364,20 @@ export function addLayersToGlassClone(place) {
     }
 }
 
+let isGameEnd = false;
 function endGame(status) {
+    if (isGameEnd) {
+        return;
+    }
+
+    isGameEnd = true;
+    clearInterval(timer);
+
     for (const place in places) {
         if (places[place].progressBar !== null) {
             clearInterval(places[place].progressBar);
         }
     }
-
-    clearInterval(timer);
 
     for (const timeout of ordersTimeouts) {
         clearTimeout(timeout);
