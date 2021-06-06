@@ -1,4 +1,4 @@
-import {addLayersToGlassClone} from '../index.js';
+import {addLayersToGlassClone} from './index.js';
 
 
 export function addDragAndDropEvent(obj, hidden, actionOnMouseUp, params = []) {

@@ -1,9 +1,9 @@
-import {changeColor, getMilliseconds, getTime} from './js/infrastructureFunctions.js';
-import {addDragAndDropEvent, addDragAndDropEventForCocktailsInProgress} from './js/dragAndDrop.js';
-import {requestIngredient, requestOrder, requestGlass, requestFirstOrder, requestDeleteBar} from './js/requests.js';
-import {tryGetCocktailPlace, deleteExtraGlasses, checkObjNearGlass} from './js/glassFunctions.js';
-import {changeMoney, drawResultStars, runTimer} from './js/styleFunctions.js';
-import {colors, toppingsDict} from './js/config.js';
+import {changeColor, getMilliseconds, getTime} from './infrastructureFunctions.js';
+import {addDragAndDropEvent, addDragAndDropEventForCocktailsInProgress} from './dragAndDrop.js';
+import {requestIngredient, requestOrder, requestGlass, requestFirstOrder, requestDeleteBar} from './requests.js';
+import {tryGetCocktailPlace, deleteExtraGlasses, checkObjNearGlass} from './glassFunctions.js';
+import {changeMoney, drawResultStars, runTimer} from './styleFunctions.js';
+import {colors, toppingsDict} from './config.js';
 
 const ordersTimeouts = [];
 const placeNames = [];
